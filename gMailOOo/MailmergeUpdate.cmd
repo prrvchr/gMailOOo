@@ -1,0 +1,1 @@
+PowerShell.exe -Command &{Start-Process -FilePath PowerShell.exe -Verb RunAs -ArgumentList @('-Command &{Move-Item '%s' '%s.bak' -Force; Copy-Item '%s' '%s' -Force}')}

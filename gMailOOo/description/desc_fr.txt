@@ -1,0 +1,2 @@
+
+gMailOOo est une implementation de Google Mail OAuth2.0 pour OpenOffice / LibreOffice.

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<oor:component-schema
+  oor:name="gMailOOo"
+  oor:package="com.gmail.prrvchr.extensions"
+  xml:lang="en-US" xmlns:oor="http://openoffice.org/2001/registry"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <component>
+        <group oor:name="MailMergeWizard">
+            <prop oor:name="ConnectionTimeout" oor:type="xs:short" />
+            <prop oor:name="ConnectionSecurity" oor:type="xs:short" />
+            <prop oor:name="AuthenticationMethod" oor:type="xs:short" />
+            <prop oor:name="RefreshToken" oor:type="xs:string" />
+            <prop oor:name="AccessToken" oor:type="xs:string" />
+            <prop oor:name="ExpiresTimeStamp" oor:type="xs:int" />
+        </group>
+    </component>
+</oor:component-schema>
