@@ -88,7 +88,7 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         arg.Value = nodepath
         args.append(arg)
         return tuple(args)
-    def _getConfigurationSetting(self, nodepath, property):
+    def _getConfigSetting(self, nodepath, property):
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
         access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
         return access.getByName(property)
@@ -132,10 +132,10 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         port = int(xConnectionContext.getValueByName("Port"))
         if dbg:
             print("Port: " + str(port), file=dbgout)
-        timeout = int(self._getConfigurationSetting(g_SettingNodePath, "ConnectionTimeout"))
+        timeout = int(self._getConfigSetting(g_SettingNodePath, "ConnectionTimeout"))
         if dbg:
             print("Timeout: " + str(timeout), file=dbgout)
-        security = self._getConfigurationSetting(g_SettingNodePath, "ConnectionSecurity")
+        security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
         hightsecurity = len(self.supportedconnection) - 1
         if security > hightsecurity:
             connectiontype = self.supportedconnection[hightsecurity]
@@ -143,7 +143,7 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
             connectiontype = self.supportedconnection[security]
         if dbg:
             print("ConnectionType: " + connectiontype, file=dbgout)
-        authentication = self._getConfigurationSetting(g_SettingNodePath, "AuthenticationMethod")
+        authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
         hightauthentication = len(self.supportedauthentication) - 1
         if authentication > hightauthentication:
             authenticationtype = self.supportedauthentication[hightauthentication]
@@ -351,7 +351,7 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         arg.Value = nodepath
         args.append(arg)
         return tuple(args)
-    def _getConfigurationSetting(self, nodepath, property):
+    def _getConfigSetting(self, nodepath, property):
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
         access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
         return access.getByName(property)
@@ -395,7 +395,7 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         port = int(xConnectionContext.getValueByName("Port"))
         if dbg:
             print("Port: " + str(port), file=dbgout)
-        security = self._getConfigurationSetting(g_SettingNodePath, "ConnectionSecurity")
+        security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
         hightsecurity = len(self.supportedconnection) - 1
         if security > hightsecurity:
             connectiontype = self.supportedconnection[hightsecurity]
@@ -403,7 +403,7 @@ class PyMailIMAPService(unohelper.Base, XMailService):
             connectiontype = self.supportedconnection[security]
         if dbg:
             print("ConnectionType: " + connectiontype, file=dbgout)
-        authentication = self._getConfigurationSetting(g_SettingNodePath, "AuthenticationMethod")
+        authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
         hightauthentication = len(self.supportedauthentication) - 1
         if authentication > hightauthentication:
             authenticationtype = self.supportedauthentication[hightauthentication]
@@ -471,7 +471,7 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         arg.Value = nodepath
         args.append(arg)
         return tuple(args)
-    def _getConfigurationSetting(self, nodepath, property):
+    def _getConfigSetting(self, nodepath, property):
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
         access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
         return access.getByName(property)
@@ -515,10 +515,10 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         port = int(xConnectionContext.getValueByName("Port"))
         if dbg:
             print(port, file=dbgout)
-        timeout = int(self._getConfigurationSetting(g_SettingNodePath, "ConnectionTimeout"))
+        timeout = int(self._getConfigSetting(g_SettingNodePath, "ConnectionTimeout"))
         if dbg:
             print("Timeout: " + str(timeout), file=dbgout)
-        security = self._getConfigurationSetting(g_SettingNodePath, "ConnectionSecurity")
+        security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
         hightsecurity = len(self.supportedconnection) - 1
         if security > hightsecurity:
             connectiontype = self.supportedconnection[hightsecurity]
@@ -526,7 +526,7 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
             connectiontype = self.supportedconnection[security]
         if dbg:
             print("ConnectionType: " + connectiontype, file=dbgout)
-        authentication = self._getConfigurationSetting(g_SettingNodePath, "AuthenticationMethod")
+        authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
         hightauthentication = len(self.supportedauthentication) - 1
         if authentication > hightauthentication:
             authenticationtype = self.supportedauthentication[hightauthentication]

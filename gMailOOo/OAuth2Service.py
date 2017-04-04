@@ -170,7 +170,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         args.append(arg)
         return tuple(args)
 
-    def _getConfigurationSetting(self, nodepath, property):
+    def _getConfigSetting(self, nodepath, property):
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
         access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
         return access.getByName(property)

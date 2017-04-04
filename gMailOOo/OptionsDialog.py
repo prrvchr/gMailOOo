@@ -27,22 +27,19 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XActionListener, XChangesLis
 
     # XChangesListener
     def changesOccurred(self, event):
-        self._setConfigSetting(g_SettingNodePath, g_ConnectionTimeout, 0)
+        pass
 
     # XActionListener
     def actionPerformed(self, event):
         if self.dialog != event.Source.getContext():
             return
-        if event.Source.Model.Name == "ListBox1":
-            if event.Source.getSelectedItemPos() == 0:
-                self.dialog.getControl("CommandButton1").Enable = False
-            elif self.dialog.getControl("ListBox2").getSelectedItemPos() == 2:
-                self.dialog.getControl("CommandButton1").Enable = True
-        elif event.Source.Model.Name == "ListBox2":
-            if event.Source.getSelectedItemPos() != 2:
-                self.dialog.getControl("CommandButton1").Enable = False
-            elif self.dialog.getControl("ListBox1").getSelectedItemPos() != 0:
-                self.dialog.getControl("CommandButton1").Enable = True
+        if event.Source.Model.Name == "OptionButton1":
+            if event.Source.getState():
+                self.dialog.getControl("OptionButton6").Model.Enable = False
+                if self.dialog.getControl("OptionButton6").getState():
+                    self.dialog.getControl("OptionButton5").setState(True)
+            else:
+                self.dialog.getControl("OptionButton6").Model.Enable = True
         elif event.Source.Model.Name == "CommandButton1":
             component = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx)
             component.initialize(())
@@ -80,8 +77,12 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XActionListener, XChangesLis
 #        access = self._getConfigAccess("org.openoffice.Office.Writer/MailMergeWizard")
 #        access.removeChangesListener(self)
         self._setConfigSetting(g_SettingNodePath, g_ConnectionTimeout, int(self.dialog.getControl("NumericField1").getValue()))
-#        self._setConfigSetting(g_SettingNodePath, g_ConnectionSecurity, self.dialog.getControl("ListBox1").getSelectedItemPos())
-#        self._setConfigSetting(g_SettingNodePath, g_AuthenticationMethod, self.dialog.getControl("ListBox2").getSelectedItemPos())
+        for i in range(1, 4):
+            if self.dialog.getControl("OptionButton%s" % (i)).getState():
+                self._setConfigSetting(g_SettingNodePath, g_ConnectionSecurity, i - 1)
+        for i in range(4, 7):
+            if self.dialog.getControl("OptionButton%s" % (i)).getState():
+                self._setConfigSetting(g_SettingNodePath, g_AuthenticationMethod, i - 4)
         return
 
     def _eventBack(self):
@@ -90,15 +91,11 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XActionListener, XChangesLis
         self.dialog.getControl("OptionButton%s" % (security)).setState(True)
         authentication = self._getConfigSetting(g_SettingNodePath, g_AuthenticationMethod) + 4
         self.dialog.getControl("OptionButton%s" % (authentication)).setState(True)
-#        self.dialog.getControl("ListBox1").selectItemPos(self._getConfigSetting(g_SettingNodePath, g_ConnectionSecurity), True)
-#        self.dialog.getControl("ListBox2").selectItemPos(self._getConfigSetting(g_SettingNodePath, g_AuthenticationMethod), True)
         return
 
     def _eventInitialize(self):
-        access = self._getConfigAccess("org.openoffice.Office.Writer/MailMergeWizard", True)
-        access.addChangesListener(self)
-#        self.dialog.getControl("ListBox1").addActionListener(self)
-#        self.dialog.getControl("ListBox2").addActionListener(self)
+#        access = self._getConfigAccess("org.openoffice.Office.Writer/MailMergeWizard", True)
+#        access.addChangesListener(self)
         self.dialog.getControl("CommandButton1").addActionListener(self)
         self._eventBack()
         return
