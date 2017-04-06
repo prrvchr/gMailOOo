@@ -12,9 +12,15 @@
    <dlg:title dlg:value="&amp;8.OptionsDialog.FrameControl1.Label"/>
   </dlg:titledbox>
   <dlg:radiogroup>
-   <dlg:radio dlg:id="OptionButton1" dlg:tab-index="4" dlg:left="10" dlg:top="70" dlg:width="80" dlg:height="12" dlg:tag="0" dlg:help-text="&amp;9.OptionsDialog.OptionButton1.HelpText" dlg:value="&amp;10.OptionsDialog.OptionButton1.Label" dlg:group-name="ConnectionSecurity"/>
-   <dlg:radio dlg:id="OptionButton2" dlg:tab-index="5" dlg:left="100" dlg:top="70" dlg:width="80" dlg:height="12" dlg:tag="1" dlg:help-text="&amp;11.OptionsDialog.OptionButton2.HelpText" dlg:value="&amp;12.OptionsDialog.OptionButton2.Label" dlg:group-name="ConnectionSecurity"/>
-   <dlg:radio dlg:id="OptionButton3" dlg:tab-index="6" dlg:left="190" dlg:top="70" dlg:width="80" dlg:height="12" dlg:tag="2" dlg:help-text="&amp;13.OptionsDialog.OptionButton3.HelpText" dlg:value="&amp;14.OptionsDialog.OptionButton3.Label" dlg:group-name="ConnectionSecurity"/>
+   <dlg:radio dlg:id="OptionButton1" dlg:tab-index="4" dlg:left="10" dlg:top="70" dlg:width="80" dlg:height="12" dlg:tag="0" dlg:help-text="&amp;9.OptionsDialog.OptionButton1.HelpText" dlg:value="&amp;10.OptionsDialog.OptionButton1.Label" dlg:group-name="ConnectionSecurity">
+    <script:event script:event-name="on-itemstatechange" script:macro-name="vnd.sun.star.UNO:Unsecure" script:language="UNO"/>
+   </dlg:radio>
+   <dlg:radio dlg:id="OptionButton2" dlg:tab-index="5" dlg:left="100" dlg:top="70" dlg:width="80" dlg:height="12" dlg:tag="1" dlg:help-text="&amp;11.OptionsDialog.OptionButton2.HelpText" dlg:value="&amp;12.OptionsDialog.OptionButton2.Label" dlg:group-name="ConnectionSecurity">
+    <script:event script:event-name="on-itemstatechange" script:macro-name="vnd.sun.star.UNO:Secure" script:language="UNO"/>
+   </dlg:radio>
+   <dlg:radio dlg:id="OptionButton3" dlg:tab-index="6" dlg:left="190" dlg:top="70" dlg:width="80" dlg:height="12" dlg:tag="2" dlg:help-text="&amp;13.OptionsDialog.OptionButton3.HelpText" dlg:value="&amp;14.OptionsDialog.OptionButton3.Label" dlg:group-name="ConnectionSecurity">
+    <script:event script:event-name="on-itemstatechange" script:macro-name="vnd.sun.star.UNO:Secure" script:language="UNO"/>
+   </dlg:radio>
   </dlg:radiogroup>
   <dlg:titledbox dlg:id="FrameControl2" dlg:tab-index="7" dlg:left="4" dlg:top="103" dlg:width="272" dlg:height="36" dlg:help-text="&amp;15.OptionsDialog.FrameControl2.HelpText">
    <dlg:title dlg:value="&amp;16.OptionsDialog.FrameControl2.Label"/>
@@ -22,8 +28,12 @@
   <dlg:radiogroup>
    <dlg:radio dlg:id="OptionButton4" dlg:tab-index="8" dlg:left="10" dlg:top="116" dlg:width="80" dlg:height="12" dlg:tag="0" dlg:help-text="&amp;17.OptionsDialog.OptionButton4.HelpText" dlg:value="&amp;18.OptionsDialog.OptionButton4.Label" dlg:group-name="AuthenticationMethod"/>
    <dlg:radio dlg:id="OptionButton5" dlg:tab-index="9" dlg:left="100" dlg:top="116" dlg:width="80" dlg:height="12" dlg:tag="1" dlg:help-text="&amp;19.OptionsDialog.OptionButton5.HelpText" dlg:value="&amp;20.OptionsDialog.OptionButton5.Label" dlg:group-name="AuthenticationMethod"/>
-   <dlg:radio dlg:id="OptionButton6" dlg:tab-index="10" dlg:left="190" dlg:top="116" dlg:width="80" dlg:height="12" dlg:tag="2" dlg:help-text="&amp;21.OptionsDialog.OptionButton6.HelpText" dlg:value="&amp;22.OptionsDialog.OptionButton6.Label" dlg:group-name="AuthenticationMethod"/>
+   <dlg:radio dlg:id="OptionButton6" dlg:tab-index="10" dlg:left="190" dlg:top="116" dlg:width="80" dlg:height="12" dlg:tag="2" dlg:help-text="&amp;21.OptionsDialog.OptionButton6.HelpText" dlg:value="&amp;22.OptionsDialog.OptionButton6.Label" dlg:group-name="AuthenticationMethod">
+    <script:event script:event-name="on-itemstatechange" script:macro-name="vnd.sun.star.UNO:OAuth2" script:language="UNO"/>
+   </dlg:radio>
   </dlg:radiogroup>
-  <dlg:button dlg:id="CommandButton1" dlg:tab-index="11" dlg:left="150" dlg:top="180" dlg:width="125" dlg:height="16" dlg:help-text="&amp;23.OptionsDialog.CommandButton1.HelpText" dlg:value="&amp;24.OptionsDialog.CommandButton1.Label" dlg:valign="center"/>
+  <dlg:button dlg:id="CommandButton1" dlg:tab-index="11" dlg:left="150" dlg:top="180" dlg:width="125" dlg:height="16" dlg:help-text="&amp;23.OptionsDialog.CommandButton1.HelpText" dlg:value="&amp;24.OptionsDialog.CommandButton1.Label" dlg:valign="center">
+   <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:OAuth2Setup" script:language="UNO"/>
+  </dlg:button>
  </dlg:bulletinboard>
 </dlg:window>

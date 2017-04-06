@@ -138,25 +138,25 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
         hightsecurity = len(self.supportedconnection) - 1
         if security > hightsecurity:
-            connectiontype = self.supportedconnection[hightsecurity]
+            self.connectiontype = self.supportedconnection[hightsecurity]
         else:
-            connectiontype = self.supportedconnection[security]
+            self.connectiontype = self.supportedconnection[security]
         if dbg:
-            print("ConnectionType: " + connectiontype, file=dbgout)
+            print("ConnectionType: " + self.connectiontype, file=dbgout)
         authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
         hightauthentication = len(self.supportedauthentication) - 1
         if authentication > hightauthentication:
-            authenticationtype = self.supportedauthentication[hightauthentication]
+            self.authenticationtype = self.supportedauthentication[hightauthentication]
         else:
-            authenticationtype = self.supportedauthentication[authentication]
+            self.authenticationtype = self.supportedauthentication[authentication]
         if dbg:
-            print("AuthenticationMethod: " + authenticationtype, file=dbgout)
-        if connectiontype.upper() == 'SSL':
+            print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
+        if self.connectiontype.upper() == 'SSL':
             context = ssl.create_default_context()
             self.server = smtplib.SMTP_SSL(server, port=port, timeout=timeout, context=context)
         else:
             self.server = smtplib.SMTP(server, port=port, timeout=timeout)
-        if connectiontype.upper() == 'TLS':
+        if self.connectiontype.upper() == 'TLS':
             context = ssl.create_default_context()
             self.server.starttls(context=context)
         #stderr not available for us under windows, but
@@ -173,10 +173,10 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
                 password = password.encode('ascii')
             if dbg:
                 print("Logging in, username of: " + user, file=dbgout)
-        if authenticationtype.upper() == 'OAUTH2':
+        if self.authenticationtype.upper() == 'OAUTH2':
             authstring = self._getOAuth2String(user, True)
             self.server.docmd('AUTH', 'XOAUTH2 ' + authstring)
-        elif authenticationtype.upper() == 'LOGIN':
+        elif self.authenticationtype.upper() == 'LOGIN':
             self.server.login(user, password)
         for listener in self.listeners:
             listener.connected(self.notify)
@@ -398,25 +398,25 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
         hightsecurity = len(self.supportedconnection) - 1
         if security > hightsecurity:
-            connectiontype = self.supportedconnection[hightsecurity]
+            self.connectiontype = self.supportedconnection[hightsecurity]
         else:
-            connectiontype = self.supportedconnection[security]
+            self.connectiontype = self.supportedconnection[security]
         if dbg:
-            print("ConnectionType: " + connectiontype, file=dbgout)
+            print("ConnectionType: " + self.connectiontype, file=dbgout)
         authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
         hightauthentication = len(self.supportedauthentication) - 1
         if authentication > hightauthentication:
-            authenticationtype = self.supportedauthentication[hightauthentication]
+            self.authenticationtype = self.supportedauthentication[hightauthentication]
         else:
-            authenticationtype = self.supportedauthentication[authentication]
+            self.authenticationtype = self.supportedauthentication[authentication]
         if dbg:
-            print("AuthenticationMethod: " + authenticationtype, file=dbgout)
-        if connectiontype.upper() == 'SSL':
+            print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
+        if self.connectiontype.upper() == 'SSL':
             context = ssl.create_default_context()
             self.server = imaplib.IMAP4_SSL(server, port=port, context=context)
         else:
             self.server = imaplib.IMAP4(server, port=port)
-        if connectiontype.upper() == 'TLS':
+        if self.connectiontype.upper() == 'TLS':
             context = ssl.create_default_context()
             self.server.starttls(context=context)
         user = xAuthenticator.getUserName()
@@ -427,10 +427,10 @@ class PyMailIMAPService(unohelper.Base, XMailService):
                 password = password.encode('ascii')
             if dbg:
                 print("Logging in, username of: " + user, file=dbgout)
-        if authenticationtype.upper() == 'OAUTH2':
+        if self.authenticationtype.upper() == 'OAUTH2':
             authstring = self._getOAuth2String(user, False)
             self.server.authenticate('XOAUTH2', lambda x: authstring)
-        elif authenticationtype.upper() == 'LOGIN':
+        elif self.authenticationtype.upper() == 'LOGIN':
             self.server.login(user, password)
         for listener in self.listeners:
             listener.connected(self.notify)
@@ -521,25 +521,25 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
         hightsecurity = len(self.supportedconnection) - 1
         if security > hightsecurity:
-            connectiontype = self.supportedconnection[hightsecurity]
+            self.connectiontype = self.supportedconnection[hightsecurity]
         else:
-            connectiontype = self.supportedconnection[security]
+            self.connectiontype = self.supportedconnection[security]
         if dbg:
-            print("ConnectionType: " + connectiontype, file=dbgout)
+            print("ConnectionType: " + self.connectiontype, file=dbgout)
         authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
         hightauthentication = len(self.supportedauthentication) - 1
         if authentication > hightauthentication:
-            authenticationtype = self.supportedauthentication[hightauthentication]
+            self.authenticationtype = self.supportedauthentication[hightauthentication]
         else:
-            authenticationtype = self.supportedauthentication[authentication]
+            self.authenticationtype = self.supportedauthentication[authentication]
         if dbg:
-            print("AuthenticationMethod: " + authenticationtype, file=dbgout)
-        if connectiontype.upper() == 'SSL':
+            print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
+        if self.connectiontype.upper() == 'SSL':
             context = ssl.create_default_context()
             self.server = poplib.POP3_SSL(server, port=port, timeout=timeout, context=context)
         else:
             self.server = poplib.POP3(server, port=port, timeout=tout)
-        if connectiontype.upper() == 'TLS':
+        if self.connectiontype.upper() == 'TLS':
             context = ssl.create_default_context()
             self.server.stls(context=context)
         user = xAuthenticator.getUserName()
@@ -549,7 +549,7 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
             password = password.encode('ascii')
         if dbg:
             print("Logging in, username of: " + user, file=dbgout)
-        if authenticationtype.upper() == 'LOGIN':
+        if self.authenticationtype.upper() == 'LOGIN':
             self.server.user(user)
             self.server.pass_(password)
         for listener in self.listeners:

@@ -93,9 +93,9 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         params["scope"] = scope
         params["prompt"] = "consent"
         params["response_type"] = "code"
-        return "%s?%s" % (self._accountsUrl("o/oauth2/auth"), urllib.parse.urlencode(params))
+        return "%s?%s" % (self._getAccountsUrl("o/oauth2/auth"), urllib.parse.urlencode(params))
 
-    def _accountsUrl(self, command):
+    def _getAccountsUrl(self, command):
         return "%s/%s" % (GOOGLE_ACCOUNTS_BASE_URL, command)
 
     def _getAuthorizeTokens(self, authorization):
@@ -110,7 +110,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         params["code"] = authorization
         params["grant_type"] = "authorization_code"
         params["redirect_uri"] = REDIRECT_URI
-        request_url = self._accountsUrl("o/oauth2/token")
+        request_url = self._getAccountsUrl("o/oauth2/token")
         request_param = urllib.parse.urlencode(params).encode("utf-8")
         request = urllib.request.Request(request_url, request_param)
         response = urllib.request.urlopen(request, timeout=5).read()
@@ -141,7 +141,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         params["client_secret"] = g_ClientSecret
         params["refresh_token"] = refreshtoken
         params["grant_type"] = "refresh_token"
-        request_url = self._accountsUrl("o/oauth2/token")
+        request_url = self._getAccountsUrl("o/oauth2/token")
         request_param = urllib.parse.urlencode(params).encode("utf-8")
         request = urllib.request.Request(request_url, request_param)
         response = urllib.request.urlopen(request, timeout=5).read()

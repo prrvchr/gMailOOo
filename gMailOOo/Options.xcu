@@ -10,10 +10,10 @@
             <value>5</value>
         </prop>
         <prop oor:name="ConnectionSecurity" oor:op="fuse">
-            <value>1</value>
+            <value>2</value>
         </prop>
         <prop oor:name="AuthenticationMethod" oor:op="fuse">
-            <value>2</value>
+            <value>1</value>
         </prop>
         <prop oor:name="RefreshToken" oor:op="fuse">
             <value></value>
