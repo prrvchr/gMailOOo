@@ -15,7 +15,6 @@ import stat
 g_ImplementationHelper = unohelper.ImplementationHelper()
 g_ImplementationName = "com.gmail.prrvchr.extensions.gMailOOo.MailmergeUpdate"
 g_MailMergePython = "mailmerge.py"
-g_BasicHandlerURL = "vnd.sun.star.script:gMailOOo.OptionsDialog.CloseOffice?language=Basic&location=application"
 
 class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XCloseable, XJob):
     def __init__(self, ctx):

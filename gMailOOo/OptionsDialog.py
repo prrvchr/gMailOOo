@@ -76,25 +76,13 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler
             self._setOAuth2Setup()
 
     def _setOAuth2Setup(self):
-        self.dialog.getControl("NumericField1").setValue(0)
-        component = self.ctx.ServiceManager.createInstanceWithArgumentsAndContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", (), self.ctx)
-#        component = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx)
-        self.dialog.getControl("NumericField1").setValue(1)
-        timestamp = component.getByName("ExpiresTimeStamp")
-        self.dialog.getControl("NumericField1").setValue(2)
-#        self.dialog.getControl("NumericField1").setValue(timestamp)
-#        component = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx)
-#        arg = ("docmd", "arg1")
-#        try:
-#        component.invoke("getAuthenticationCmd", (), (), ())
-#        except:
-#        component.initialize(())
+        component = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx)
+        component.initialize(())
 
     def _loadSetting(self):
         self.dialog.getControl("NumericField1").setValue(self._getConfigSetting(g_SettingNodePath, g_ConnectionTimeout))
         security = self._getConfigSetting(g_SettingNodePath, g_ConnectionSecurity) + 1
         self.dialog.getControl("OptionButton%s" % (security)).setState(True)
-#        self.dialogcomponent = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx).getControl("OptionButton%s" % (security)).setState(True)
         authentication = self._getConfigSetting(g_SettingNodePath, g_AuthenticationMethod) + 4
         self.dialog.getControl("OptionButton%s" % (authentication)).setState(True)
         return
