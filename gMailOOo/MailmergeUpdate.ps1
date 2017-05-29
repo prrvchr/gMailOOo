@@ -1,3 +1,13 @@
-$source = $args[0]
-$target = $args[1]
-Start-Process -FilePath PowerShell.exe -Verb RunAs -ArgumentList @('-Command &{Move-Item $target $target.bak -Force; Copy-Item $source $target -Force}')
+Param(
+    [string] $source,
+    [string] $target,
+    [switch] $run
+)
+if($run)
+{
+    Copy-Item $source $target
+}
+else
+{
+    Start-Process -FilePath MailmergeUpdate.ps1 -Verb RunAs -ArgumentList "-source $source -target $target -run"
+}
