@@ -70,6 +70,7 @@ else:
 class PyMailSMTPService(unohelper.Base, XSmtpService):
     def __init__(self, ctx):
         self.ctx = ctx
+        self.type = SMTP
         self.listeners = []
         self.connectiontype = None
         self.authenticationtype = None
@@ -334,6 +335,7 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
 class PyMailIMAPService(unohelper.Base, XMailService):
     def __init__( self, ctx ):
         self.ctx = ctx
+        self.type = IMAP
         self.listeners = []
         self.connectiontype = None
         self.authenticationtype = None
@@ -454,6 +456,7 @@ class PyMailIMAPService(unohelper.Base, XMailService):
 class PyMailPOP3Service(unohelper.Base, XMailService):
     def __init__( self, ctx ):
         self.ctx = ctx
+        self.type = POP3
         self.listeners = []
         self.connectiontype = None
         self.authenticationtype = None
@@ -580,11 +583,11 @@ class PyMailServiceProvider(unohelper.Base, XMailServiceProvider, XServiceInfo):
         if dbg:
             print("PyMailServiceProvider create with", aType, file=dbgout)
         if aType == SMTP:
-            return PyMailSMTPService(self.ctx);
+            return PyMailSMTPService(self.ctx)
         elif aType == POP3:
-            return PyMailPOP3Service(self.ctx);
+            return PyMailPOP3Service(self.ctx)
         elif aType == IMAP:
-            return PyMailIMAPService(self.ctx);
+            return PyMailIMAPService(self.ctx)
         else:
             print("PyMailServiceProvider, unknown TYPE " + aType, file=dbgout)
 

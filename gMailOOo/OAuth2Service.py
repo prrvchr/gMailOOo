@@ -31,6 +31,7 @@ REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
 class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEventHandler, XStringEscape):
     def __init__(self, ctx):
         self.ctx = ctx
+        self.dialog = None
 
     # XInitialization
     def initialize(self, *arg):
@@ -39,7 +40,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
 
     # XDialogEventHandler
     def callHandlerMethod(self, dialog, event, method):
-        if dialog.Model.Name == "Dialog":
+        if self.dialog == dialog:
             step = dialog.Model.Step
             if method == "DialogOk":
                 if step == 1:
@@ -79,12 +80,13 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
 
     def _openDialog(self, step, text=""):
         provider = self.ctx.ServiceManager.createInstanceWithContext("com.sun.star.awt.DialogProvider2", self.ctx)
-        dialog = provider.createDialogWithHandler("vnd.sun.star.script:gMailOOo.Dialog?location=application", self)
-        dialog.Model.Step = step
+        self.dialog = provider.createDialogWithHandler("vnd.sun.star.script:gMailOOo.Dialog?location=application", self)
+        self.dialog.Model.Step = step
         if text != "":
-            dialog.getControl("TextField%s" % (step)).setText(text)
-        dialog.execute()
-        dialog.dispose()
+            self.dialog.getControl("TextField%s" % (step)).setText(text)
+        self.dialog.execute()
+        self.dialog.dispose()
+        self.dialog = None
 
     def _getPermissionUrl(self, scope="https://mail.google.com/"):
         params = {}
@@ -154,7 +156,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         accesstoken = self._getConfigSetting(g_SettingNodePath, "AccessToken")
         authstring = "user=%s\1auth=Bearer %s\1\1" % (username, accesstoken)
         if encode:
-          authstring = base64.b64encode(authstring.encode('ascii'))
+          authstring = base64.b64encode(authstring.encode("ascii"))
         return authstring
         
     def _saveResponse(self, response, timestamp):
