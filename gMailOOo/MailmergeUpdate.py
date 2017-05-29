@@ -106,8 +106,9 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
         source = uno.fileUrlToSystemPath(self.source)
         target = uno.fileUrlToSystemPath(self.target)
         if os.name == "nt":
-            script = self._getScriptPath("MailmergeUpdate.ps1")
-            command = "powershell.exe -ExecutionPolicy ByPass -File \"%s\" -source \"%s\" -target \"%s\"" % (script, source, target)
+            file = self._getScriptPath("MailmergeUpdate.ps1")
+            script = self._getScriptPath("MailmergeUpdate.cmd")
+            command = "powershell.exe -ExecutionPolicy ByPass -File \"%s\" -script \"%s\" -source \"%s\" -target \"%s\"" % (file, script, source, target)
             text = "copy \"%s\" \"%s\"" % (source, target)
         else:
             script = self._getScriptPath("MailmergeUpdate.sh")
