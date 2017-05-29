@@ -116,7 +116,7 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
             executable = mode & stat.S_IXUSR
             if not executable:
                 os.chmod(script, (mode | stat.S_IXUSR))
-            command = "x-terminal-emulator -e '%s' --sourcefile '%s' --targetfile '%s'" % (script, source, target)
+            command = "x-terminal-emulator -e '%s' --source '%s' --target '%s'" % (script, source, target)
             text = "sudo cp '%s' '%s'" % (source, target)
         return (command, text)
 

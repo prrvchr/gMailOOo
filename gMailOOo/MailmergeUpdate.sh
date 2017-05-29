@@ -2,16 +2,16 @@
 
 usage()
 {
-    echo "usage: MailmergeUpdate.sh [[[-s sourcefile ] [-t targetfile ]] | [-h]]"
+    echo "usage: MailmergeUpdate.sh [[[-s source ] [-t target ]] | [-h]]"
 }
 source=
 target=
 while [ "$1" != "" ]; do
     case "$1" in
-        -s | --sourcefile )     shift
+        -s | --source )         shift
                                 source="$1"
                                 ;;
-        -t | --targetfile )     shift
+        -t | --target )         shift
                                 target="$1"
                                 ;;
         -h | --help )           usage

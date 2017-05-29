@@ -1,13 +1,6 @@
 Param(
     [string] $source,
-    [string] $target,
-    [switch] $run
+    [string] $target
 )
-if($run)
-{
-    Copy-Item $source $target
-}
-else
-{
-    Start-Process -FilePath MailmergeUpdate.ps1 -Verb RunAs -ArgumentList "-source $source -target $target -run"
+Start-Process -FilePath MailmergeUpdate.cmd -Verb RunAs -ArgumentList "$source", "$target"
 }
