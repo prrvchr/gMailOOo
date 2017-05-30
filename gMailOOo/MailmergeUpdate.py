@@ -26,7 +26,7 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
 
     # XJob
     def execute(self, *args):
-        if self._isMailServiceNeedUpdate():
+        if not self._isMailServiceUptodate():
             self._openDialog()
 
     # XCloseable
@@ -74,11 +74,10 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
             desktop = self.ctx.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", self.ctx)
             desktop.terminate()
  
-    def _isMailServiceNeedUpdate(self):
+    def _isMailServiceUptodate(self):
         service = self.ctx.ServiceManager.createInstance("com.sun.star.ucb.SimpleFileAccess")
-        if service.exists(self.target):
-            if service.getSize(self.target) == service.getSize(self.source):
-                return False
+        if service.getSize(self.target) != service.getSize(self.source):
+            return False
         return True
 
     def _getScriptPath(self, script):
@@ -96,7 +95,7 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
     def _updateMailService(self):
         command, text = self._getUpdateCommand()
         status = os.system(command)
-        if self._isMailServiceNeedUpdate():
+        if status or not self._isMailServiceUptodate():
             self.dialog.getControl("TextField4").Text = text
             self.dialog.Model.Step = 4
         else:
