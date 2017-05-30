@@ -50,7 +50,6 @@ from email.utils import parseaddr
 #from socket import _GLOBAL_DEFAULT_TIMEOUT
 
 import sys, smtplib, imaplib, poplib
-import ssl
 dbg = False
 
 # pythonloader looks for a static g_ImplementationHelper variable
@@ -153,13 +152,11 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         if dbg:
             print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
         if self.connectiontype.upper() == 'SSL':
-            context = ssl.create_default_context()
-            self.server = smtplib.SMTP_SSL(server, port=port, timeout=timeout, context=context)
+            self.server = smtplib.SMTP_SSL(host=server, port=port, timeout=timeout)
         else:
-            self.server = smtplib.SMTP(server, port=port, timeout=timeout)
+            self.server = smtplib.SMTP(host=server, port=port, timeout=timeout)
         if self.connectiontype.upper() == 'TLS':
-            context = ssl.create_default_context()
-            self.server.starttls(context=context)
+            self.server.starttls()
         #stderr not available for us under windows, but
         #set_debuglevel outputs there, and so throw
         #an exception under windows on debugging mode
@@ -414,13 +411,11 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         if dbg:
             print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
         if self.connectiontype.upper() == 'SSL':
-            context = ssl.create_default_context()
-            self.server = imaplib.IMAP4_SSL(server, port=port, context=context)
+            self.server = imaplib.IMAP4_SSL(host=server, port=port)
         else:
-            self.server = imaplib.IMAP4(server, port=port)
+            self.server = imaplib.IMAP4(host=server, port=port)
         if self.connectiontype.upper() == 'TLS':
-            context = ssl.create_default_context()
-            self.server.starttls(context=context)
+            self.server.starttls()
         user = xAuthenticator.getUserName()
         password = xAuthenticator.getPassword()
         if user != '':
@@ -538,13 +533,11 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         if dbg:
             print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
         if self.connectiontype.upper() == 'SSL':
-            context = ssl.create_default_context()
-            self.server = poplib.POP3_SSL(server, port=port, timeout=timeout, context=context)
+            self.server = poplib.POP3_SSL(host=server, port=port, timeout=timeout)
         else:
-            self.server = poplib.POP3(server, port=port, timeout=tout)
+            self.server = poplib.POP3(host=server, port=port, timeout=tout)
         if self.connectiontype.upper() == 'TLS':
-            context = ssl.create_default_context()
-            self.server.stls(context=context)
+            self.server.stls()
         user = xAuthenticator.getUserName()
         password = xAuthenticator.getPassword()
         if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"

@@ -96,7 +96,7 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
     def _updateMailService(self):
         command, text = self._getUpdateCommand()
         status = os.system(command)
-        if status or self._isMailServiceNeedUpdate():
+        if self._isMailServiceNeedUpdate():
             self.dialog.getControl("TextField4").Text = text
             self.dialog.Model.Step = 4
         else:
