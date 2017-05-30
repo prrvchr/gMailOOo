@@ -88,7 +88,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         self.dialog.dispose()
         self.dialog = None
 
-    def _getPermissionUrl(self, scope="https://mail.google.com/"):
+    def _getPermissionUrl(self, scope="https://www.googleapis.com/auth/gmail.send"):
         params = {}
         params["client_id"] = g_ClientId
         params["redirect_uri"] = REDIRECT_URI
