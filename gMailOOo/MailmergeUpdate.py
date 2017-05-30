@@ -76,7 +76,7 @@ class PyMailmergeUpdate(unohelper.Base, XServiceInfo, XDialogEventHandler, XClos
  
     def _isMailServiceNeedUpdate(self):
         service = self.ctx.ServiceManager.createInstance("com.sun.star.ucb.SimpleFileAccess")
-        if service.exist(self.target):
+        if service.exists(self.target):
             if service.getSize(self.target) == service.getSize(self.source):
                 return False
         return True
