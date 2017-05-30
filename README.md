@@ -5,7 +5,11 @@ Has been tested with:
 LibreOffice 5.3.2.2 (need Python > 2)
 Lubuntu 16.10 -  LxQt 0.11.0.3
 
-Gmail connection:
+Gmail connection: 
+
+Smtp Server: smtp.gmail.com
+User: your gMail email address
+Password: your gMail password
 
 SSL on port 465
 
