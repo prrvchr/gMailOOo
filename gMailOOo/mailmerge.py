@@ -168,7 +168,8 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         if user != '':
             if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
                 user = user.encode('ascii')
-                password = password.encode('ascii')
+                if password != '':
+                    password = password.encode('ascii')
             if dbg:
                 print("Logging in, username of: " + user, file=dbgout)
         if self.authenticationtype.upper() == 'OAUTH2':
@@ -421,7 +422,8 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         if user != '':
             if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
                 user = user.encode('ascii')
-                password = password.encode('ascii')
+                if password != '':
+                    password = password.encode('ascii')
             if dbg:
                 print("Logging in, username of: " + user, file=dbgout)
         if self.authenticationtype.upper() == 'OAUTH2':
@@ -542,7 +544,8 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         password = xAuthenticator.getPassword()
         if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
             user = user.encode('ascii')
-            password = password.encode('ascii')
+            if password != '':
+                password = password.encode('ascii')
         if dbg:
             print("Logging in, username of: " + user, file=dbgout)
         if self.authenticationtype.upper() == 'LOGIN':
