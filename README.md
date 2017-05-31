@@ -23,7 +23,7 @@ Smtp Server: smtp.gmail.com
 
 User: your gMail email address (mandatory)
 
-Password: your gMail password (needed for user/password authentication)
+Password: your gMail password (needed for user/password authentication, not used with OAuth2 but do not leave empty)
 
 
 Type of connection tested:
