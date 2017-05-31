@@ -1,6 +1,13 @@
 # gMailOOo
 
-gMail OAuth2 implementation for LibreOffice.
+
+
+Google Mail OAuth2 implementation for LibreOffice.
+
+
+
+![alt text](gMailOOo.png "gMailOOo screenshot")
+
 
 
 Has been tested with:
