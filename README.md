@@ -1,6 +1,6 @@
 # gMailOOo
 
-## Google Mail OAuth2 implementation for LibreOffice.
+## Google Mail OAuth2.0 implementation for LibreOffice.
 
 ![gMailOOo screenshot](gMailOOo.png)
 
@@ -35,3 +35,11 @@
 Load [Google Account Setting](https://myaccount.google.com/security?utm_source=OGB#connectedapps)
 
 You must enable less secured application.
+
+## Setting requirement for OAuth2 authentication with SSL or TLS:
+
+You must get authorization code from Google:
+
+LibreOffice mailmerge wants to Send email on your behalf for sending email
+
+copy and paste authorization code to LibreOffice Message Box.
