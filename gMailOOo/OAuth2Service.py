@@ -44,8 +44,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
             step = dialog.Model.Step
             if method == "DialogOk":
                 if step == 1:
-                    url = dialog.getControl("TextField1").getText()
-                    self._openBrowser(url)
+                    self._openBrowser()
                     dialog.Model.Step = 2
                 elif step == 2:
                     authorization = dialog.getControl("TextField2").getText()
@@ -74,7 +73,8 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
     def getSupportedServiceNames(self):
         return g_ImplementationHelper.getSupportedServiceNames(g_ImplementationName)
 
-    def _openBrowser(self, url):
+    def _openBrowser(self):
+        url = self._getPermissionUrl()
         shell = self.ctx.ServiceManager.createInstance("com.sun.star.system.SystemShellExecute")
         shell.execute(url, "", 0)
 
@@ -160,9 +160,10 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         return authstring
         
     def _saveResponse(self, response, timestamp):
-        self._setConfigSetting(g_SettingNodePath, "RefreshToken", response["refresh_token"])
+        if "refresh_token" in response:
+            self._setConfigSetting(g_SettingNodePath, "RefreshToken", response["refresh_token"])
         self._setConfigSetting(g_SettingNodePath, "AccessToken", response["access_token"])
-        self._setConfigSetting(g_SettingNodePath, "ExpiresTimeStamp", timestamp + response["expires_in"])
+        self._setConfigSetting(g_SettingNodePath, "ExpiresTimeStamp", timestamp + int(response["expires_in"]))
 
     def _getPropertyValue(self, nodepath):
         args = []

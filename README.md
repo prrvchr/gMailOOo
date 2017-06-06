@@ -16,7 +16,7 @@
 
 * User: your gMail email address (mandatory)
 
-* Password: your gMail password (needed for user/password authentication, not used with OAuth2 but do not leave empty)
+* Password: your gMail password (needed for Login/password authentication, not used with OAuth2 but do not leave empty)
 
 ## Type of connection tested:
 
@@ -34,11 +34,11 @@
 
 mailmerge.py need to be updated.
 
-You must confirm the update of this file the first time you restart LibreOffice or after any update.
+You must confirm the update of this file the first time you restart LibreOffice or after any update of LibreOffice.
 
 ## Setting requirements for Login/password authentication with SSL or TLS:
 
-Load [Google Account Setting](https://myaccount.google.com/security?utm_source=OGB#connectedapps)
+Load: [Google Account Setting](https://myaccount.google.com/security?utm_source=OGB#connectedapps)
 
 You must enable less secured application.
 
@@ -48,4 +48,4 @@ You must get authorization code from Google:
 
 LibreOffice mailmerge wants to Send email on your behalf for sending email
 
-copy and paste authorization code to LibreOffice Message Box.
+copy and paste authorization code to LibreOffice gMailOOo Message Box.
