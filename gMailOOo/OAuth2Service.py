@@ -49,7 +49,7 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
                 elif step == 2:
                     authorization = dialog.getControl("TextField2").getText()
                     if authorization != "":
-                        self._getAuthorizeTokens(authorization)
+                        self._getTokens(authorization)
                     dialog.endExecute()
                 return True
             elif method == "DialogCancel":
@@ -100,12 +100,12 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
     def _getAccountsUrl(self, command):
         return "%s/%s" % (GOOGLE_ACCOUNTS_BASE_URL, command)
 
-    def _getAuthorizeTokens(self, authorization):
+    def _getTokens(self, authorization):
         timestamp = int(time.time())
-        response = self._generateAuthorizeTokens(authorization)
+        response = self._generateTokens(authorization)
         self._saveResponse(response, timestamp)
 
-    def _generateAuthorizeTokens(self, authorization):
+    def _generateTokens(self, authorization):
         params = {}
         params["client_id"] = g_ClientId
         params["client_secret"] = g_ClientSecret
@@ -118,26 +118,26 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         response = urllib.request.urlopen(request, timeout=5).read()
         return json.loads(response.decode("utf-8"))
 
-    def _isRefreshTokenExpired(self, timestamp):
+    def _isAccessTokenExpired(self, timestamp):
         expirestimestamp = self._getConfigSetting(g_SettingNodePath, "ExpiresTimeStamp")
         if expirestimestamp <= timestamp:
             return True
         return False
 
-    def _initRefreshToken(self):
+    def _getRefreshToken(self):
         self._openBrowser()
         self._openDialog(2)
         refreshtoken = self._getConfigSetting(g_SettingNodePath, "RefreshToken")
         return refreshtoken
 
-    def _getRefreshToken(self, timestamp):
+    def _refreshAccessToken(self, timestamp):
         refreshtoken = self._getConfigSetting(g_SettingNodePath, "RefreshToken")
         if refreshtoken == "":
-            refreshtoken = self._initRefreshToken()
-        response = self._generateRrefreshToken(refreshtoken)
+            refreshtoken = self._getRefreshToken()
+        response = self._generateAccessToken(refreshtoken)
         self._saveResponse(response, timestamp)
 
-    def _generateRrefreshToken(self, refreshtoken):
+    def _generateAccessToken(self, refreshtoken):
         params = {}
         params["client_id"] = g_ClientId
         params["client_secret"] = g_ClientSecret
@@ -151,8 +151,8 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
 
     def _getAuthenticationString(self, username, encode=False):
         timestamp = int(time.time())
-        if self._isRefreshTokenExpired(timestamp):
-            self._getRefreshToken(timestamp)
+        if self._isAccessTokenExpired(timestamp):
+            self._refreshAccessToken(timestamp)
         accesstoken = self._getConfigSetting(g_SettingNodePath, "AccessToken")
         authstring = "user=%s\1auth=Bearer %s\1\1" % (username, accesstoken)
         if encode:
