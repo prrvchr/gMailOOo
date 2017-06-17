@@ -30,12 +30,6 @@
 
 * OAuth2 with SSL or TLS (recommanded authentication type)
 
-## System requirements for installing this extension:
-
-mailmerge.py need to be updated.
-
-You must confirm the update of this file the first time you restart LibreOffice or after any update of LibreOffice.
-
 ## Setting requirements for Login/password authentication with SSL or TLS:
 
 Load: [Google Account Setting](https://myaccount.google.com/security?utm_source=OGB#connectedapps)

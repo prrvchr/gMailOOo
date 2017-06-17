@@ -54,8 +54,8 @@ dbg = False
 
 # pythonloader looks for a static g_ImplementationHelper variable
 g_ImplementationHelper = unohelper.ImplementationHelper()
-g_providerImplName = "org.openoffice.pyuno.MailServiceProvider"
-g_messageImplName = "org.openoffice.pyuno.MailMessage"
+g_providerImplName = "org.openoffice.pyuno.MailServiceProvider2"
+g_messageImplName = "org.openoffice.pyuno.MailMessage2"
 
 g_SettingNodePath = "com.gmail.prrvchr.extensions.gMailOOo/MailMergeWizard"
 
@@ -537,7 +537,7 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         if self.connectiontype.upper() == 'SSL':
             self.server = poplib.POP3_SSL(host=server, port=port, timeout=timeout)
         else:
-            self.server = poplib.POP3(host=server, port=port, timeout=tout)
+            self.server = poplib.POP3(host=server, port=port, timeout=timeout)
         if self.connectiontype.upper() == 'TLS':
             self.server.stls()
         user = xAuthenticator.getUserName()
