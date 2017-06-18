@@ -7,7 +7,7 @@
 
 The OAuth2.0 protocol allows the connection to the SMTP mail server of Google, after acceptance of the connection authorization, by exchange of tokens.
 
-The revocation takes place in the management of [Application associated with your account](https://myaccount.google.com/security?utm_source=OGB#connectedapps)
+The revocation takes place in the management of: [Application associated with your account](https://myaccount.google.com/security?utm_source=OGB#connectedapps)
 
 No more password is stored in LibreOffice.
 
