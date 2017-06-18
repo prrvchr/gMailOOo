@@ -4,6 +4,11 @@
 
 ![gMailOOo screenshot](gMailOOo.png)
 
+
+The OAuth2.0 protocol allows the connection to the SMTP mail server of Google, after acceptance of the connection authorization, by exchange of tokens.
+The revocation takes place in the management of [Application associated with your account](https://myaccount.google.com/security?utm_source=OGB#connectedapps)
+No more password is stored in LibreOffice.
+
 ## Has been tested with:
 	
 * LibreOffice 5.3.3.2 - Lubuntu 16.10 -  LxQt 0.11.0.3
