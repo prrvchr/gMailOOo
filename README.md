@@ -1,4 +1,4 @@
-# gMailOOo
+# gMailOOo v.0.0.3
 
 ## Google Mail OAuth2.0 implementation for LibreOffice.
 
@@ -16,6 +16,14 @@ No more password is stored in LibreOffice.
 * LibreOffice 5.3.3.2 - Lubuntu 16.10 -  LxQt 0.11.0.3
 
 * LibreOffice 5.3.1.2 x86 - Windows 7 SP1
+
+I encourage you in case of problem to create an [issue](https://github.com/prrvchr/gContactOOo/issues/new)
+I will try to solve it :-)
+
+## Requirements:
+
+* Install : [Requests: HTTP for Humans](http://docs.python-requests.org/en/master/user/install/)
+	
 
 ## Gmail account setting: 
 
