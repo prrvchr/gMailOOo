@@ -4,23 +4,20 @@
 import uno
 import unohelper
 
-#interfaces
 from com.sun.star.lang import XServiceInfo
 from com.sun.star.awt import XContainerWindowEventHandler
+from com.sun.star.beans import PropertyValue
 
+# pythonloader looks for a static g_ImplementationHelper variable
 g_ImplementationHelper = unohelper.ImplementationHelper()
 g_ImplementationName = "com.gmail.prrvchr.extensions.gMailOOo.OptionsDialog"
 
-g_SettingNodePath = "com.gmail.prrvchr.extensions.gMailOOo/MailMergeWizard"
-g_ConnectionTimeout = "ConnectionTimeout"
-g_ConnectionSecurity = "ConnectionSecurity"
-g_AuthenticationMethod = "AuthenticationMethod"
 
-# main class
 class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler):
     def __init__(self, ctx):
         self.ctx = ctx
         self.dialog = None
+        self.configuration = "com.gmail.prrvchr.extensions.gMailOOo/MailMergeWizard"
         return
 
     # XContainerWindowEventHandler
@@ -28,7 +25,15 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler
         if dialog.Model.Name == "OptionsDialog":
             if method == "external_event":
                 if event == "ok":
-                    self._saveSetting()
+                    configuration = self._getConfiguration(self.configuration, True)
+                    configuration.replaceByName("ConnectionTimeout", int(self.dialog.getControl("NumericField1").getValue()))
+                    for i in range(1, 4):
+                        if self.dialog.getControl("OptionButton%s" % (i)).getState():
+                            configuration.replaceByName("ConnectionSecurity", i - 1)
+                    for i in range(4, 7):
+                        if self.dialog.getControl("OptionButton%s" % (i)).getState():
+                            configuration.replaceByName("AuthenticationMethod", i - 4)
+                    configuration.commitChanges()
                     return True
                 elif event == "back":
                     self._loadSetting()
@@ -39,13 +44,17 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler
                     self._loadSetting()
                     return True
             elif method == "Unsecure":
-                self._setUnsecure()
+                if self.dialog.getControl("OptionButton6").getState():
+                    self.dialog.getControl("OptionButton5").setState(True)
+                self.dialog.getControl("OptionButton6").Model.Enabled = False
                 return True
             elif method == "Secure":
-                self._setSecure()
+                self.dialog.getControl("OptionButton6").Model.Enabled = True
                 return True
             elif method == "OAuth2":
-                self._setOAuth2()
+                timestamp = self._getConfiguration(self.configuration).getByName("ExpiresTimeStamp")
+                if timestamp == 0:
+                    self._setOAuth2Setup()
                 return True
             elif method == "OAuth2Setup":
                 self._setOAuth2Setup()
@@ -55,71 +64,32 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler
         return ("external_event", "Unsecure", "Secure", "OAuth2", "OAuth2Setup")
 
     # XServiceInfo
-    def supportsService(self, serviceName):
-        return g_ImplementationHelper.supportsService(g_ImplementationName, serviceName)
+    def supportsService(self, service):
+        return g_ImplementationHelper.supportsService(g_ImplementationName, service)
     def getImplementationName(self):
         return g_ImplementationName
     def getSupportedServiceNames(self):
         return g_ImplementationHelper.getSupportedServiceNames(g_ImplementationName)
-
-    def _setUnsecure(self):
-        if self.dialog.getControl("OptionButton6").getState():
-            self.dialog.getControl("OptionButton5").setState(True)
-        self.dialog.getControl("OptionButton6").Model.Enabled = False
-
-    def _setSecure(self):
-        self.dialog.getControl("OptionButton6").Model.Enabled = True
-
-    def _setOAuth2(self):
-        timestamp = self._getConfigSetting(g_SettingNodePath, "ExpiresTimeStamp")
-        if timestamp == 0:
-            self._setOAuth2Setup()
 
     def _setOAuth2Setup(self):
         component = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx)
         component.initialize(())
 
     def _loadSetting(self):
-        self.dialog.getControl("NumericField1").setValue(self._getConfigSetting(g_SettingNodePath, g_ConnectionTimeout))
-        security = self._getConfigSetting(g_SettingNodePath, g_ConnectionSecurity) + 1
+        self.dialog.getControl("NumericField1").setValue(self._getConfiguration(self.configuration).getByName("ConnectionTimeout"))
+        security = self._getConfiguration(self.configuration).getByName("ConnectionSecurity") + 1
         self.dialog.getControl("OptionButton%s" % (security)).setState(True)
-        authentication = self._getConfigSetting(g_SettingNodePath, g_AuthenticationMethod) + 4
+        authentication = self._getConfiguration(self.configuration).getByName("AuthenticationMethod") + 4
         self.dialog.getControl("OptionButton%s" % (authentication)).setState(True)
-        return
 
-    def _saveSetting(self):
-        self._setConfigSetting(g_SettingNodePath, g_ConnectionTimeout, int(self.dialog.getControl("NumericField1").getValue()))
-        for i in range(1, 4):
-            if self.dialog.getControl("OptionButton%s" % (i)).getState():
-                self._setConfigSetting(g_SettingNodePath, g_ConnectionSecurity, i - 1)
-        for i in range(4, 7):
-            if self.dialog.getControl("OptionButton%s" % (i)).getState():
-                self._setConfigSetting(g_SettingNodePath, g_AuthenticationMethod, i - 4)
-        return
-
-    def _getPropertyValue(self, nodepath):
-        args = []
-        arg = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
-        arg.Name = "nodepath"
-        arg.Value = nodepath
-        args.append(arg)
-        return tuple(args)
-
-    def _getConfigSetting(self, nodepath, property):
+    def _getConfiguration(self, nodepath, update=False):
+        value = uno.Enum("com.sun.star.beans.PropertyState", "DIRECT_VALUE")
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
-        return access.getByName(property)
+        service = "com.sun.star.configuration.ConfigurationUpdateAccess" if update else "com.sun.star.configuration.ConfigurationAccess"
+        return config.createInstanceWithArguments(service, (PropertyValue("nodepath", -1, nodepath, value), ))
 
-    def _setConfigSetting(self, nodepath, property, value):
-        config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationUpdateAccess", self._getPropertyValue(nodepath))
-        access.replaceByName(property, value)
-        access.commitChanges()
-        return
 
-# uno implementation
-g_ImplementationHelper.addImplementation( \
-        PyOptionsDialog,                                                       # UNO object class
-        g_ImplementationName,                                                  # Implementation name
-        ("com.sun.star.lang.XServiceInfo",
-        "com.sun.star.awt.XContainerWindowEventHandler"), )                    # List of implemented services
+g_ImplementationHelper.addImplementation(PyOptionsDialog,                                            # UNO object class
+                                         g_ImplementationName,                                       # Implementation name
+                                         ("com.sun.star.lang.XServiceInfo",
+                                         "com.sun.star.awt.XContainerWindowEventHandler"), )         # List of implemented services

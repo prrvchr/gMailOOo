@@ -4,39 +4,43 @@
 import uno
 import unohelper
 
-from com.sun.star.lang import XServiceInfo
-from com.sun.star.lang import XInitialization
+from com.sun.star.lang import XServiceInfo, XInitialization
+from com.sun.star.task import XInteractionHandler
 from com.sun.star.awt import XDialogEventHandler
 from com.sun.star.util import XStringEscape
+from com.sun.star.beans import PropertyValue
 
-import urllib.parse, urllib.request
-import json
+import requests
 import time
+import uuid
 import base64
+import hashlib
 
 # pythonloader looks for a static g_ImplementationHelper variable
 g_ImplementationHelper = unohelper.ImplementationHelper()
 g_ImplementationName = "com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service"
 
-g_SettingNodePath = "com.gmail.prrvchr.extensions.gMailOOo/MailMergeWizard"
 
-g_ClientId = "429153119813-sg5ks5gfu737nm2iitm5v1um3kr0a1fo.apps.googleusercontent.com"
-g_ClientSecret = "1VPCRFBpgYZGvTwoyMFsx6Or"
-# The URL root for accessing Google Accounts.
-GOOGLE_ACCOUNTS_BASE_URL = "https://accounts.google.com"
-# Hardcoded dummy redirect URI for non-web apps.
-REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
-
-
-class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEventHandler, XStringEscape):
+class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEventHandler, XStringEscape, XInteractionHandler):
     def __init__(self, ctx):
         self.ctx = ctx
         self.dialog = None
+        self.configuration = "com.gmail.prrvchr.extensions.gMailOOo/MailMergeWizard"
+        self.client = "85733218570-ijl14qpp5sqq029lg89qvppgm29qhklt.apps.googleusercontent.com"
+        self.redirect = "urn:ietf:wg:oauth:2.0:oob"
+        self.secret = str.encode(str(uuid.uuid4().hex * 2))
+        #resource = "com.sun.star.resource.StringResourceWithLocation"
+        #arguments = (self._getResourceLocation(), True, self._getCurrentLocale(), "DialogStrings", "", self)
+        #self.resource = self.ctx.ServiceManager.createInstanceWithArgumentsAndContext(resource, arguments, self.ctx)
 
     # XInitialization
     def initialize(self, *arg):
         url = self._getPermissionUrl()
         self._openDialog(1, url)
+
+    # XInteractionHandler
+    def handle(self, requester):
+        pass
 
     # XDialogEventHandler
     def callHandlerMethod(self, dialog, event, method):
@@ -44,12 +48,13 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
             step = dialog.Model.Step
             if method == "DialogOk":
                 if step == 1:
-                    self._openBrowser()
+                    url = self._getPermissionUrl()
+                    self._executeShell(url)
                     dialog.Model.Step = 2
                 elif step == 2:
-                    authorization = dialog.getControl("TextField2").getText()
-                    if authorization != "":
-                        self._getTokens(authorization)
+                    code = dialog.getControl("TextField2").getText()
+                    if code:
+                        self._getTokens(code)
                     dialog.endExecute()
                 return True
             elif method == "DialogCancel":
@@ -66,20 +71,19 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         return self._getAuthenticationString(username, False)
 
     # XServiceInfo
-    def supportsService(self, serviceName):
-        return g_ImplementationHelper.supportsService(g_ImplementationName, serviceName)
+    def supportsService(self, service):
+        return g_ImplementationHelper.supportsService(g_ImplementationName, service)
     def getImplementationName(self):
         return g_ImplementationName
     def getSupportedServiceNames(self):
         return g_ImplementationHelper.getSupportedServiceNames(g_ImplementationName)
 
-    def _openBrowser(self):
-        url = self._getPermissionUrl()
+    def _executeShell(self, url, option=""):
         shell = self.ctx.ServiceManager.createInstance("com.sun.star.system.SystemShellExecute")
-        shell.execute(url, "", 0)
+        shell.execute(url, option, 0)
 
     def _openDialog(self, step, text=""):
-        provider = self.ctx.ServiceManager.createInstanceWithContext("com.sun.star.awt.DialogProvider2", self.ctx)
+        provider = self.ctx.ServiceManager.createInstanceWithContext("com.sun.star.awt.DialogProvider", self.ctx)
         self.dialog = provider.createDialogWithHandler("vnd.sun.star.script:gMailOOo.Dialog?location=application", self)
         self.dialog.Model.Step = step
         if text != "":
@@ -88,107 +92,125 @@ class PyOAuth2Service(unohelper.Base, XServiceInfo, XInitialization, XDialogEven
         self.dialog.dispose()
         self.dialog = None
 
+    def _getUserName(self):
+        path = "/org.openoffice.Office.Writer/MailMergeWizard"
+        if self._getMailServiceType() == uno.Enum("com.sun.star.mail.MailServiceType", "SMTP"):
+            return self._getConfiguration(path).getByName("MailUserName")
+        else:
+            return self._getConfiguration(path).getByName("InServerUserName")
+
+    def _getMailServiceType(self):
+        path = "/org.openoffice.Office.Writer/MailMergeWizard"
+        if self._getConfiguration(path).getByName("IsSMPTAfterPOP"):
+            if self._getConfiguration(path).getByName("InServerIsPOP"):
+                return uno.Enum("com.sun.star.mail.MailServiceType", "POP3")
+            else:
+                return uno.Enum("com.sun.star.mail.MailServiceType", "IMAP")
+        else:
+            return uno.Enum("com.sun.star.mail.MailServiceType", "SMTP")
+
     def _getPermissionUrl(self, scope="https://www.googleapis.com/auth/gmail.send"):
-        params = {}
-        params["client_id"] = g_ClientId
-        params["redirect_uri"] = REDIRECT_URI
-        params["scope"] = scope
-        params["prompt"] = "consent"
-        params["response_type"] = "code"
-        return "%s?%s" % (self._getAccountsUrl("o/oauth2/auth"), urllib.parse.urlencode(params))
+        parameters = {}
+        parameters["client_id"] = self.client
+        parameters["redirect_uri"] = self.redirect
+        parameters["response_type"] = "code"
+        parameters["scope"] = scope
+        parameters["access_type"] = "offline"
+        parameters["code_challenge_method"] = "S256"
+        parameters["code_challenge"] = self._getChallengeCode()
+        parameters["login_hint"] = self._getUserName()
+        return requests.Request("GET", "https://accounts.google.com/o/oauth2/v2/auth", params=parameters).prepare().url
+
+    def _getChallengeCode(self):
+        code = hashlib.sha256(self.secret).digest()
+        padding = {0:0, 1:2, 2:1}[len(code) % 3]
+        challenge = base64.urlsafe_b64encode(code)
+        return challenge[0:len(challenge)-padding]
 
     def _getAccountsUrl(self, command):
-        return "%s/%s" % (GOOGLE_ACCOUNTS_BASE_URL, command)
+        return "%s/%s" % ("https://www.googleapis.com", command)
 
-    def _getTokens(self, authorization):
+    def _getTokens(self, code):
         timestamp = int(time.time())
-        response = self._generateTokens(authorization)
-        self._saveResponse(response, timestamp)
-
-    def _generateTokens(self, authorization):
-        params = {}
-        params["client_id"] = g_ClientId
-        params["client_secret"] = g_ClientSecret
-        params["code"] = authorization
-        params["grant_type"] = "authorization_code"
-        params["redirect_uri"] = REDIRECT_URI
-        request_url = self._getAccountsUrl("o/oauth2/token")
-        request_param = urllib.parse.urlencode(params).encode("utf-8")
-        request = urllib.request.Request(request_url, request_param)
-        response = urllib.request.urlopen(request, timeout=5).read()
-        return json.loads(response.decode("utf-8"))
+        parameters = {}
+        parameters["client_id"] = self.client
+        parameters["redirect_uri"] = self.redirect
+        parameters["grant_type"] = "authorization_code"
+        parameters["code"] = code
+        parameters["code_verifier"] = self.secret
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        response = requests.post(self._getAccountsUrl("oauth2/v4/token"), headers=headers, data=parameters, timeout=5)
+        self._saveResponse(response.json(), timestamp)
 
     def _isAccessTokenExpired(self, timestamp):
-        expirestimestamp = self._getConfigSetting(g_SettingNodePath, "ExpiresTimeStamp")
-        if expirestimestamp <= timestamp:
-            return True
-        return False
+        return self._getConfiguration(self.configuration).getByName("ExpiresTimeStamp") <= timestamp
 
-    def _getRefreshToken(self):
-        self._openBrowser()
+    def _getAuthorizationCode(self):
+        url = self._getPermissionUrl()
+        self._executeShell(url)
         self._openDialog(2)
-        refreshtoken = self._getConfigSetting(g_SettingNodePath, "RefreshToken")
-        return refreshtoken
+        return self._getConfiguration(self.configuration).getByName("RefreshToken")
 
-    def _refreshAccessToken(self, timestamp):
-        refreshtoken = self._getConfigSetting(g_SettingNodePath, "RefreshToken")
-        if refreshtoken == "":
-            refreshtoken = self._getRefreshToken()
-        response = self._generateAccessToken(refreshtoken)
-        self._saveResponse(response, timestamp)
-
-    def _generateAccessToken(self, refreshtoken):
-        params = {}
-        params["client_id"] = g_ClientId
-        params["client_secret"] = g_ClientSecret
-        params["refresh_token"] = refreshtoken
-        params["grant_type"] = "refresh_token"
-        request_url = self._getAccountsUrl("o/oauth2/token")
-        request_param = urllib.parse.urlencode(params).encode("utf-8")
-        request = urllib.request.Request(request_url, request_param)
-        response = urllib.request.urlopen(request, timeout=5).read()
-        return json.loads(response.decode("utf-8"))
+    def _refreshAccessToken(self, refreshtoken, timestamp):
+        parameters = {}
+        parameters["client_id"] = self.client
+        parameters["refresh_token"] = refreshtoken
+        parameters["grant_type"] = "refresh_token"
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        response = requests.post(self._getAccountsUrl("oauth2/v4/token"), headers=headers, data=parameters, timeout=5)
+        return self._saveResponse(response.json(), timestamp, "access_token")
 
     def _getAuthenticationString(self, username, encode=False):
+        refreshtoken = self._getConfiguration(self.configuration).getByName("RefreshToken")
+        if not refreshtoken:
+            refreshtoken = self._getAuthorizationCode()
         timestamp = int(time.time())
         if self._isAccessTokenExpired(timestamp):
-            self._refreshAccessToken(timestamp)
-        accesstoken = self._getConfigSetting(g_SettingNodePath, "AccessToken")
+            accesstoken = self._refreshAccessToken(refreshtoken, timestamp)
+        else:
+            accesstoken = self._getConfiguration(self.configuration).getByName("AccessToken")
         authstring = "user=%s\1auth=Bearer %s\1\1" % (username, accesstoken)
         if encode:
           authstring = base64.b64encode(authstring.encode("ascii"))
         return authstring
         
-    def _saveResponse(self, response, timestamp):
+    def _saveResponse(self, response, timestamp, key=None):
+        configuration = self._getConfiguration(self.configuration, True)
         if "refresh_token" in response:
-            self._setConfigSetting(g_SettingNodePath, "RefreshToken", response["refresh_token"])
-        self._setConfigSetting(g_SettingNodePath, "AccessToken", response["access_token"])
-        self._setConfigSetting(g_SettingNodePath, "ExpiresTimeStamp", timestamp + int(response["expires_in"]))
+            configuration.replaceByName("RefreshToken", response["refresh_token"])
+        if "access_token" in response:
+            configuration.replaceByName("AccessToken", response["access_token"])
+        if "expires_in" in response:
+            configuration.replaceByName("ExpiresTimeStamp", timestamp + int(response["expires_in"]))
+        configuration.commitChanges()
+        return key if key is None else response[key]
 
-    def _getPropertyValue(self, nodepath):
-        args = []
-        arg = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
-        arg.Name = "nodepath"
-        arg.Value = nodepath
-        args.append(arg)
-        return tuple(args)
-
-    def _getConfigSetting(self, nodepath, property):
+    def _getConfiguration(self, nodepath, update=False):
+        value = uno.Enum("com.sun.star.beans.PropertyState", "DIRECT_VALUE")
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
-        return access.getByName(property)
+        service = "com.sun.star.configuration.ConfigurationUpdateAccess" if update else "com.sun.star.configuration.ConfigurationAccess"
+        return config.createInstanceWithArguments(service, (PropertyValue("nodepath", -1, nodepath, value),))
 
-    def _setConfigSetting(self, nodepath, property, value):
-        config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationUpdateAccess", self._getPropertyValue(nodepath))
-        access.replaceByName(property, value)
-        access.commitChanges()
+    def _getResourceLocation(self):
+        identifier = "com.gmail.prrvchr.extensions.gMailOOo"
+        provider = self.ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider")
+        return "%s/gMailOOo" % (provider.getPackageLocation(identifier))
+
+    def _getCurrentLocale(self):
+        parts = self._getConfiguration("/org.openoffice.Setup/L10N").getByName("ooLocale").split("-")
+        locale = Locale(parts[0], "", "")
+        if len(parts) == 2:
+            locale.Country = parts[1]
+        else:
+            service = self.ctx.ServiceManager.createInstance("com.sun.star.i18n.LocaleData")
+            locale.Country = service.getLanguageCountryInfo(locale).Country
+        return locale
 
 
-g_ImplementationHelper.addImplementation( \
-        PyOAuth2Service,                                                       # UNO object class
-        g_ImplementationName,                                                  # Implementation name
-        ("com.sun.star.lang.XServiceInfo",
-        "com.sun.star.lang.XInitialization",
-        "com.sun.star.awt.XDialogEventHandler",
-        "com.sun.star.util.XStringEscape"), )                                  # List of implemented services
+g_ImplementationHelper.addImplementation(PyOAuth2Service,                                            # UNO object class
+                                         g_ImplementationName,                                       # Implementation name
+                                         ("com.sun.star.lang.XServiceInfo",
+                                         "com.sun.star.lang.XInitialization",
+                                         "com.sun.star.awt.XDialogEventHandler",
+                                         "com.sun.star.util.XStringEscape",
+                                         "com.sun.star.task.XInteractionHandler"), )                 # List of implemented services

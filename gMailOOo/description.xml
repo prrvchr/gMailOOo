@@ -3,7 +3,7 @@
   xmlns="http://openoffice.org/extensions/description/2006"
   xmlns:d="http://openoffice.org/extensions/description/2006"
   xmlns:xlink="http://www.w3.org/1999/xlink">
-	<version value="0.0.2" />
+	<version value="0.0.3" />
 	<identifier value="com.gmail.prrvchr.extensions.gMailOOo" />
 	<platform value="all" />
 	<dependencies>
@@ -14,7 +14,7 @@
 	</update-information>
 	<registration>
 		<simple-license accept-by="admin" suppress-on-update="true" >
-			<license-text xlink:href="registration/license_en-GB.txt" lang="en-GB" />
+			<license-text xlink:href="registration/license_fr-FR.txt" lang="fr-FR" />
 			<license-text xlink:href="registration/license_en-US.txt" lang="en-US" />
 		</simple-license>
 	</registration>
