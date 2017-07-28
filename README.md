@@ -55,6 +55,6 @@ You must enable less secured application.
 
 You must get authorization code from Google:
 
-LibreOffice mailmerge wants to Send email on your behalf for sending email
+LibreOffice - gMailOOo wants to Send email on your behalf for sending email
 
 copy and paste authorization code to LibreOffice gMailOOo Message Box.
