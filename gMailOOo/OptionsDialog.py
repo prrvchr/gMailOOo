@@ -47,9 +47,13 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler
                 if self.dialog.getControl("OptionButton6").getState():
                     self.dialog.getControl("OptionButton5").setState(True)
                 self.dialog.getControl("OptionButton6").Model.Enabled = False
+                self.dialog.getControl("CommandButton1").Model.Enabled = False
+                self.dialog.getControl("CommandButton2").Model.Enabled = False
                 return True
             elif method == "Secure":
                 self.dialog.getControl("OptionButton6").Model.Enabled = True
+                self.dialog.getControl("CommandButton1").Model.Enabled = True
+                self.dialog.getControl("CommandButton2").Model.Enabled = True
                 return True
             elif method == "OAuth2":
                 timestamp = self._getConfiguration(self.configuration).getByName("ExpiresTimeStamp")
@@ -73,7 +77,7 @@ class PyOptionsDialog(unohelper.Base, XServiceInfo, XContainerWindowEventHandler
 
     def _setOAuth2Setup(self):
         component = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service", self.ctx)
-        component.initialize(())
+        component.trigger(2)
 
     def _loadSetting(self):
         self.dialog.getControl("NumericField1").setValue(self._getConfiguration(self.configuration).getByName("ConnectionTimeout"))

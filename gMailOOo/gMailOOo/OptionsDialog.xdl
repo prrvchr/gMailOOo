@@ -32,7 +32,7 @@
     <script:event script:event-name="on-itemstatechange" script:macro-name="vnd.sun.star.UNO:OAuth2" script:language="UNO"/>
    </dlg:radio>
   </dlg:radiogroup>
-  <dlg:button dlg:id="CommandButton1" dlg:tab-index="11" dlg:left="150" dlg:top="180" dlg:width="125" dlg:height="16" dlg:help-text="&amp;23.OptionsDialog.CommandButton1.HelpText" dlg:value="&amp;24.OptionsDialog.CommandButton1.Label" dlg:valign="center">
+  <dlg:button dlg:id="CommandButton1" dlg:tab-index="12" dlg:left="150" dlg:top="180" dlg:width="125" dlg:height="16" dlg:help-text="&amp;23.OptionsDialog.CommandButton1.HelpText" dlg:value="&amp;24.OptionsDialog.CommandButton1.Label" dlg:valign="center">
    <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:OAuth2Setup" script:language="UNO"/>
   </dlg:button>
  </dlg:bulletinboard>

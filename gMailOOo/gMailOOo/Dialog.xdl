@@ -1,19 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dlg:window PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "dialog.dtd">
-<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="Dialog" dlg:left="20" dlg:top="20" dlg:width="160" dlg:height="100" dlg:page="1" dlg:help-text="&amp;0.Dialog.HelpText" dlg:closeable="true" dlg:moveable="true" dlg:title="&amp;1.Dialog.Title">
+<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="Dialog" dlg:left="20" dlg:top="20" dlg:width="200" dlg:height="115" dlg:page="1" dlg:help-text="&amp;0.Dialog.HelpText" dlg:closeable="true" dlg:moveable="true" dlg:title="&amp;1.Dialog.Title">
  <dlg:styles>
   <dlg:style dlg:style-id="0" dlg:background-color="0xffffff"/>
  </dlg:styles>
  <dlg:bulletinboard>
-  <dlg:button dlg:id="CommandButton1" dlg:tab-index="4" dlg:left="80" dlg:top="80" dlg:width="35" dlg:height="14" dlg:help-text="&amp;2.Dialog.CommandButton1.HelpText" dlg:default="true" dlg:value="&amp;3.Dialog.CommandButton1.Label">
+  <dlg:button dlg:id="CommandButton1" dlg:tab-index="13" dlg:left="115" dlg:top="93" dlg:width="38" dlg:height="15" dlg:help-text="&amp;5.Dialog.CommandButton1.HelpText" dlg:default="true" dlg:value="&amp;6.Dialog.CommandButton1.Label">
    <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:DialogOk" script:language="UNO"/>
   </dlg:button>
-  <dlg:button dlg:id="CommandButton2" dlg:tab-index="5" dlg:left="120" dlg:top="80" dlg:width="35" dlg:height="14" dlg:help-text="&amp;4.Dialog.CommandButton2.HelpText" dlg:value="&amp;5.Dialog.CommandButton2.Label">
+  <dlg:button dlg:id="CommandButton2" dlg:tab-index="14" dlg:left="156" dlg:top="93" dlg:width="38" dlg:height="15" dlg:help-text="&amp;7.Dialog.CommandButton2.HelpText" dlg:value="&amp;8.Dialog.CommandButton2.Label">
    <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:DialogCancel" script:language="UNO"/>
   </dlg:button>
-  <dlg:text dlg:id="Label1" dlg:tab-index="0" dlg:left="5" dlg:top="5" dlg:width="150" dlg:height="10" dlg:page="1" dlg:help-text="&amp;6.Dialog.Label1.HelpText" dlg:value="&amp;7.Dialog.Label1.Label" dlg:tabstop="false"/>
-  <dlg:textfield dlg:style-id="0" dlg:id="TextField1" dlg:tab-index="1" dlg:left="5" dlg:top="20" dlg:width="150" dlg:height="14" dlg:page="1" dlg:help-text="&amp;8.Dialog.TextField1.HelpText" dlg:value="&amp;9.Dialog.TextField1.Text"/>
-  <dlg:text dlg:id="Label2" dlg:tab-index="2" dlg:left="5" dlg:top="5" dlg:width="150" dlg:height="10" dlg:page="2" dlg:help-text="&amp;10.Dialog.Label2.HelpText" dlg:value="&amp;11.Dialog.Label2.Label"/>
-  <dlg:textfield dlg:style-id="0" dlg:id="TextField2" dlg:tab-index="3" dlg:left="5" dlg:top="20" dlg:width="150" dlg:height="14" dlg:page="2" dlg:help-text="&amp;12.Dialog.TextField2.HelpText" dlg:value="&amp;13.Dialog.TextField2.Text"/>
- </dlg:bulletinboard>
+  <dlg:text dlg:id="Label1" dlg:tab-index="0" dlg:left="6" dlg:top="10" dlg:width="50" dlg:height="14" dlg:page="1" dlg:help-text="&amp;9.Dialog.Label1.HelpText" dlg:value="&amp;10.Dialog.Label1.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField1" dlg:tab-index="1" dlg:left="60" dlg:top="10" dlg:width="134" dlg:height="14" dlg:page="1" dlg:help-text="&amp;11.Dialog.TextField1.HelpText" dlg:value="&amp;12.Dialog.TextField1.Text"/>
+  <dlg:text dlg:id="Label2" dlg:tab-index="2" dlg:left="6" dlg:top="30" dlg:width="50" dlg:height="14" dlg:page="1" dlg:help-text="&amp;13.Dialog.Label2.HelpText" dlg:value="&amp;14.Dialog.Label2.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField2" dlg:tab-index="3" dlg:left="60" dlg:top="30" dlg:width="134" dlg:height="14" dlg:page="1" dlg:help-text="&amp;15.Dialog.TextField2.HelpText" dlg:value="&amp;16.Dialog.TextField2.Text"/>
+  <dlg:text dlg:id="Label3" dlg:tab-index="4" dlg:left="6" dlg:top="50" dlg:width="50" dlg:height="14" dlg:page="1" dlg:help-text="&amp;17.Dialog.Label3.HelpText" dlg:value="&amp;18.Dialog.Label3.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField3" dlg:tab-index="5" dlg:left="60" dlg:top="50" dlg:width="134" dlg:height="14" dlg:page="1" dlg:help-text="&amp;19.Dialog.TextField3.HelpText" dlg:value="&amp;20.Dialog.TextField3.Text"/>
+  <dlg:text dlg:id="Label4" dlg:tab-index="6" dlg:left="6" dlg:top="70" dlg:width="50" dlg:height="14" dlg:page="1" dlg:help-text="&amp;21.Dialog.Label4.HelpText" dlg:value="&amp;22.Dialog.Label4.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField4" dlg:tab-index="7" dlg:left="60" dlg:top="70" dlg:width="134" dlg:height="14" dlg:page="1" dlg:help-text="&amp;23.Dialog.TextField4.HelpText" dlg:value="&amp;24.Dialog.TextField4.Text"/>
+  <dlg:text dlg:id="Label5" dlg:tab-index="8" dlg:left="6" dlg:top="5" dlg:width="188" dlg:height="10" dlg:page="2" dlg:help-text="&amp;25.Dialog.Label5.HelpText" dlg:value="&amp;26.Dialog.Label5.Label" dlg:tabstop="false"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField5" dlg:tab-index="9" dlg:left="6" dlg:top="20" dlg:width="188" dlg:height="14" dlg:page="2" dlg:help-text="&amp;27.Dialog.TextField5.HelpText" dlg:value="&amp;28.Dialog.TextField5.Text"/>
+  <dlg:button dlg:id="CommandButton3" dlg:tab-index="12" dlg:left="6" dlg:top="93" dlg:width="57" dlg:height="15" dlg:page="2" dlg:help-text="&amp;29.Dialog.CommandButton3.HelpText" dlg:default="true" dlg:value="&amp;30.Dialog.CommandButton3.Label">
+   <script:event script:event-name="on-performaction" script:macro-name="vnd.sun.star.UNO:Settings" script:language="UNO"/>
+  </dlg:button>
+  <dlg:text dlg:id="Label6" dlg:tab-index="10" dlg:left="6" dlg:top="5" dlg:width="188" dlg:height="10" dlg:page="3" dlg:help-text="&amp;31.Dialog.Label6.HelpText" dlg:value="&amp;32.Dialog.Label6.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField6" dlg:tab-index="11" dlg:left="6" dlg:top="20" dlg:width="188" dlg:height="14" dlg:page="3" dlg:help-text="&amp;33.Dialog.TextField6.HelpText" dlg:value="&amp;34.Dialog.TextField6.Text"/>
+  </dlg:bulletinboard>
 </dlg:window>

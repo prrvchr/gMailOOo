@@ -10,6 +10,10 @@
             <prop oor:name="ConnectionTimeout" oor:type="xs:short" />
             <prop oor:name="ConnectionSecurity" oor:type="xs:short" />
             <prop oor:name="AuthenticationMethod" oor:type="xs:short" />
+            <prop oor:name="ClientId" oor:type="xs:string" />
+            <prop oor:name="AuthorizationUrl" oor:type="xs:string" />
+            <prop oor:name="TokenUrl" oor:type="xs:string" />
+            <prop oor:name="Scope" oor:type="xs:string" />
             <prop oor:name="RefreshToken" oor:type="xs:string" />
             <prop oor:name="AccessToken" oor:type="xs:string" />
             <prop oor:name="ExpiresTimeStamp" oor:type="xs:int" />
