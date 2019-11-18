@@ -10,6 +10,10 @@
         manifest:full-path="OAuth2Service.py"/>
     <manifest:file-entry manifest:media-type="application/vnd.sun.star.uno-component;type=Python"
         manifest:full-path="mailmerge.py"/>
+    <manifest:file-entry manifest:media-type="application/vnd.sun.star.uno-component;type=Python"
+        manifest:full-path="AuthenticatorService.py"/>
+    <manifest:file-entry manifest:media-type="application/vnd.sun.star.uno-component;type=Python"
+        manifest:full-path="ConnectionContextService.py"/>
     <manifest:file-entry manifest:media-type="application/vnd.sun.star.configuration-schema"
         manifest:full-path="Options.xcs"/>
     <manifest:file-entry manifest:media-type="application/vnd.sun.star.configuration-data"

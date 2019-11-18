@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dlg:window PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "dialog.dtd">
+<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="ConnectionContextDialog" dlg:left="20" dlg:top="20" dlg:width="200" dlg:height="115" dlg:page="1" dlg:help-text="&amp;ConnectionContextDialog.Step1.HelpText" dlg:closeable="true" dlg:moveable="true" dlg:title="&amp;ConnectionContextDialog.Step1.Title">
+ <dlg:styles>
+  <dlg:style dlg:style-id="0" dlg:background-color="0xffffff"/>
+ </dlg:styles>
+ <dlg:bulletinboard>
+  <dlg:text dlg:id="Label1" dlg:tab-index="0" dlg:left="6" dlg:top="5" dlg:width="188" dlg:height="10" dlg:page="1" dlg:help-text="&amp;ConnectionContextDialog.Label1.HelpText" dlg:value="&amp;ConnectionContextDialog.Label1.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField1" dlg:tab-index="1" dlg:left="6" dlg:top="20" dlg:width="188" dlg:height="14" dlg:page="1" dlg:help-text="&amp;ConnectionContextDialog.TextField1.HelpText" dlg:value="&amp;ConnectionContextDialog.TextField1.Text"/>
+  <dlg:button dlg:id="CommandButton1" dlg:tab-index="2" dlg:left="103" dlg:top="93" dlg:width="44" dlg:height="15" dlg:page="1" dlg:help-text="&amp;ConnectionContextDialog.Cancel.HelpText" dlg:value="&amp;ConnectionContextDialog.Cancel.Label" dlg:button-type="cancel"/>
+  <dlg:button dlg:id="CommandButton2" dlg:tab-index="3" dlg:left="150" dlg:top="93" dlg:width="44" dlg:height="15" dlg:page="1" dlg:help-text="&amp;ConnectionContextDialog.Ok.HelpText" dlg:value="&amp;ConnectionContextDialog.Ok.Label" dlg:button-type="ok"/>
+  <dlg:text dlg:id="Label2" dlg:tab-index="4" dlg:left="6" dlg:top="5" dlg:width="188" dlg:height="10" dlg:page="2" dlg:help-text="&amp;ConnectionContextDialog.Label2.HelpText" dlg:value="&amp;ConnectionContextDialog.Label2.Label"/>
+  <dlg:textfield dlg:style-id="0" dlg:id="TextField2" dlg:tab-index="5" dlg:left="6" dlg:top="20" dlg:width="188" dlg:height="14" dlg:page="2" dlg:help-text="&amp;ConnectionContextDialog.TextField2.HelpText" dlg:value="&amp;ConnectionContextDialog.TextField2.Text"/>
+  <dlg:button dlg:id="CommandButton3" dlg:tab-index="6" dlg:left="103" dlg:top="93" dlg:width="44" dlg:height="15" dlg:page="2" dlg:help-text="&amp;ConnectionContextDialog.Cancel.HelpText" dlg:value="&amp;ConnectionContextDialog.Cancel.Label" dlg:button-type="cancel"/>
+  <dlg:button dlg:id="CommandButton4" dlg:tab-index="7" dlg:left="150" dlg:top="93" dlg:width="44" dlg:height="15" dlg:page="2" dlg:help-text="&amp;ConnectionContextDialog.Ok.HelpText" dlg:value="&amp;ConnectionContextDialog.Ok.Label" dlg:button-type="ok"/>
+  </dlg:bulletinboard>
+</dlg:window>

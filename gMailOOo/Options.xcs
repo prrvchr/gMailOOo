@@ -1,22 +1,28 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <oor:component-schema
-  oor:name="gMailOOo"
-  oor:package="com.gmail.prrvchr.extensions"
-  xml:lang="en-US" xmlns:oor="http://openoffice.org/2001/registry"
+  xml:lang="en-US"
+  xmlns:oor="http://openoffice.org/2001/registry"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <component>
-        <group oor:name="MailMergeWizard">
-            <prop oor:name="ConnectionTimeout" oor:type="xs:short" />
-            <prop oor:name="ConnectionSecurity" oor:type="xs:short" />
-            <prop oor:name="AuthenticationMethod" oor:type="xs:short" />
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  oor:package="com.gmail.prrvchr.extensions"
+  oor:name="gMailOOo">
+    <templates>
+        <group oor:name="OAuth2server">
             <prop oor:name="ClientId" oor:type="xs:string" />
             <prop oor:name="AuthorizationUrl" oor:type="xs:string" />
             <prop oor:name="TokenUrl" oor:type="xs:string" />
             <prop oor:name="Scope" oor:type="xs:string" />
             <prop oor:name="RefreshToken" oor:type="xs:string" />
             <prop oor:name="AccessToken" oor:type="xs:string" />
-            <prop oor:name="ExpiresTimeStamp" oor:type="xs:int" />
+            <prop oor:name="TimeStamp" oor:type="xs:int" />
+        </group>
+    </templates>
+    <component>
+        <group oor:name="MailMergeWizard">
+            <prop oor:name="ConnectionTimeout" oor:type="xs:short" />
+            <prop oor:name="IsSecureLevel2" oor:type="xs:boolean" />
+            <prop oor:name="IsOAuth2" oor:type="xs:boolean" />
+            <set oor:name="OAuth2servers" oor:node-type="OAuth2server" />
         </group>
     </component>
 </oor:component-schema>

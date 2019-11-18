@@ -1,40 +1,90 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <oor:component-data
-  oor:name="gMailOOo"
-  oor:package="com.gmail.prrvchr.extensions"
   xml:lang="en-US"
   xmlns:oor="http://openoffice.org/2001/registry"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <node oor:name="MailMergeWizard" oor:op="fuse" oor:mandatory="true">
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  oor:package="com.gmail.prrvchr.extensions"
+  oor:name="gMailOOo">
+    <node oor:name="MailMergeWizard">
         <prop oor:name="ConnectionTimeout" oor:op="fuse">
             <value>5</value>
         </prop>
-        <prop oor:name="ConnectionSecurity" oor:op="fuse">
-            <value>2</value>
+        <prop oor:name="IsSecureLevel2" oor:op="fuse">
+            <value>true</value>
         </prop>
-        <prop oor:name="AuthenticationMethod" oor:op="fuse">
-            <value>1</value>
+        <prop oor:name="IsOAuth2" oor:op="fuse">
+            <value>false</value>
         </prop>
-        <prop oor:name="ClientId" oor:op="fuse">
-            <value>85733218570-ijl14qpp5sqq029lg89qvppgm29qhklt.apps.googleusercontent.com</value>
-        </prop>
-        <prop oor:name="AuthorizationUrl" oor:op="fuse">
-            <value>https://accounts.google.com/o/oauth2/v2/auth</value>
-        </prop>
-        <prop oor:name="TokenUrl" oor:op="fuse">
-            <value>https://www.googleapis.com/oauth2/v4/token</value>
-        </prop>
-        <prop oor:name="Scope" oor:op="fuse">
-            <value>https://www.googleapis.com/auth/gmail.send</value>
-        </prop>
-        <prop oor:name="RefreshToken" oor:op="fuse">
-            <value></value>
-        </prop>
-        <prop oor:name="AccessToken" oor:op="fuse">
-            <value></value>
-        </prop>
-        <prop oor:name="ExpiresTimeStamp" oor:op="fuse">
-            <value>0</value>
-        </prop>
+        <node oor:name="OAuth2servers" oor:op="fuse" oor:mandatory="true">
+            <node oor:name="default" oor:op="fuse" oor:mandatory="true">
+                <prop oor:name="ClientId" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="AuthorizationUrl" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="TokenUrl" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="Scope" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="RefreshToken" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="AccessToken" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="TimeStamp" oor:op="fuse">
+                    <value>0</value>
+                </prop>
+            </node>
+            <node oor:name="smtp.gmail.com" oor:op="fuse" oor:mandatory="true">
+                <prop oor:name="ClientId" oor:op="fuse">
+                    <value>85733218570-ijl14qpp5sqq029lg89qvppgm29qhklt.apps.googleusercontent.com</value>
+                </prop>
+                <prop oor:name="AuthorizationUrl" oor:op="fuse">
+                    <value>https://accounts.google.com/o/oauth2/v2/auth</value>
+                </prop>
+                <prop oor:name="TokenUrl" oor:op="fuse">
+                    <value>https://www.googleapis.com/oauth2/v4/token</value>
+                </prop>
+                <prop oor:name="Scope" oor:op="fuse">
+                    <value>https://www.googleapis.com/auth/gmail.send</value>
+                </prop>
+                <prop oor:name="RefreshToken" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="AccessToken" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="TimeStamp" oor:op="fuse">
+                    <value>0</value>
+                </prop>
+            </node>
+            <node oor:name="imap.gmail.com" oor:op="fuse" oor:mandatory="true">
+                <prop oor:name="ClientId" oor:op="fuse">
+                    <value>85733218570-ijl14qpp5sqq029lg89qvppgm29qhklt.apps.googleusercontent.com</value>
+                </prop>
+                <prop oor:name="AuthorizationUrl" oor:op="fuse">
+                    <value>https://accounts.google.com/o/oauth2/v2/auth</value>
+                </prop>
+                <prop oor:name="TokenUrl" oor:op="fuse">
+                    <value>https://www.googleapis.com/oauth2/v4/token</value>
+                </prop>
+                <prop oor:name="Scope" oor:op="fuse">
+                    <value>https://www.googleapis.com/auth/gmail.send</value>
+                </prop>
+                <prop oor:name="RefreshToken" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="AccessToken" oor:op="fuse">
+                    <value></value>
+                </prop>
+                <prop oor:name="TimeStamp" oor:op="fuse">
+                    <value>0</value>
+                </prop>
+            </node>
+        </node>
     </node>
 </oor:component-data>

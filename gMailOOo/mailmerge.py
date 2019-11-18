@@ -57,7 +57,6 @@ g_ImplementationHelper = unohelper.ImplementationHelper()
 g_providerImplName = "org.openoffice.pyuno.MailServiceProvider2"
 g_messageImplName = "org.openoffice.pyuno.MailMessage2"
 
-g_SettingNodePath = "com.gmail.prrvchr.extensions.gMailOOo/MailMergeWizard"
 
 #no stderr under windows, output to pymailmerge.log
 #with no buffering
@@ -69,7 +68,6 @@ else:
 class PyMailSMTPService(unohelper.Base, XSmtpService):
     def __init__(self, ctx):
         self.ctx = ctx
-        self.type = SMTP
         self.listeners = []
         self.connectiontype = None
         self.authenticationtype = None
@@ -81,23 +79,14 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         if dbg:
             print("PyMailSMTPService init", file=dbgout)
             print("python version is: " + sys.version, file=dbgout)
-    def _getPropertyValue(self, nodepath):
-        args = []
-        arg = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
-        arg.Name = "nodepath"
-        arg.Value = nodepath
-        args.append(arg)
-        return tuple(args)
-    def _getConfigSetting(self, nodepath, property):
+    def _getConfiguration(self, nodepath, update=False):
         config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
-        return access.getByName(property)
-    def _getOAuth2String(self, username, encode=True):
-        oauth2service = self.ctx.ServiceManager.createInstance("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service")
-        if encode:
-            return oauth2service.escapeString(username)
-        else:
-            return oauth2service.unescapeString(username)
+        service = "com.sun.star.configuration.ConfigurationUpdateAccess" if update else \
+                  "com.sun.star.configuration.ConfigurationAccess"
+        namedvalue = uno.createUnoStruct("com.sun.star.beans.NamedValue")
+        namedvalue.Name = "nodepath"
+        namedvalue.Value = nodepath
+        return config.createInstanceWithArguments(service, (namedvalue,))
     def addConnectionListener(self, xListener):
         if dbg:
             print("PyMailSMTPService addConnectionListener", file=dbgout)
@@ -117,7 +106,8 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
     def getSupportedConnectionTypes(self):
         if dbg:
             print("PyMailSMTPService getSupportedConnectionTypes", file=dbgout)
-        return self.supportedconnection
+        return self.supportedauthentication
+    #    return self.supportedconnection
     def getSupportedAuthenticationTypes(self):
         if dbg:
             print("PyMailSMTPService getSupportedAuthenticationTypes", file=dbgout)
@@ -125,6 +115,13 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
     def connect(self, xConnectionContext, xAuthenticator):
         if dbg:
             print("PyMailSMTPService connect", file=dbgout)
+        mri = self.ctx.ServiceManager.createInstance("mytools.Mri")
+        mri.inspect(xConnectionContext)
+        mri.inspect(xAuthenticator)
+        xConnectionContext = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.ConnectionContext", self.ctx)
+        xConnectionContext.setPropertyValue("MailServiceType", SMTP)
+        xAuthenticator = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.Authenticator", self.ctx)
+
         self.connectioncontext = xConnectionContext
         server = xConnectionContext.getValueByName("ServerName")
         if dbg:
@@ -132,51 +129,44 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         port = int(xConnectionContext.getValueByName("Port"))
         if dbg:
             print("Port: " + str(port), file=dbgout)
-        timeout = int(self._getConfigSetting(g_SettingNodePath, "ConnectionTimeout"))
+        timeout = int(xConnectionContext.getValueByName("ConnectionTimeout"))
         if dbg:
             print("Timeout: " + str(timeout), file=dbgout)
-        security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
-        hightsecurity = len(self.supportedconnection) - 1
-        if security > hightsecurity:
-            self.connectiontype = self.supportedconnection[hightsecurity]
-        else:
-            self.connectiontype = self.supportedconnection[security]
+        self.connectiontype = xConnectionContext.getValueByName("ConnectionType")
         if dbg:
             print("ConnectionType: " + self.connectiontype, file=dbgout)
-        authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
-        hightauthentication = len(self.supportedauthentication) - 1
-        if authentication > hightauthentication:
-            self.authenticationtype = self.supportedauthentication[hightauthentication]
-        else:
-            self.authenticationtype = self.supportedauthentication[authentication]
+        self.authenticationtype = xConnectionContext.getValueByName("AuthenticationType")
         if dbg:
-            print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
+            print("AuthenticationType: " + self.authenticationtype, file=dbgout)
         if self.connectiontype.upper() == 'SSL':
             self.server = smtplib.SMTP_SSL(host=server, port=port, timeout=timeout)
         else:
             self.server = smtplib.SMTP(host=server, port=port, timeout=timeout)
         if self.connectiontype.upper() == 'TLS':
             self.server.starttls()
+
         #stderr not available for us under windows, but
         #set_debuglevel outputs there, and so throw
         #an exception under windows on debugging mode
         #with this enabled
         if dbg and os.name != 'nt':
             self.server.set_debuglevel(1)
-        user = xAuthenticator.getUserName()
-        password = xAuthenticator.getPassword()
-        if user != '':
-            if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
-                user = user.encode('ascii')
-                if password != '':
-                    password = password.encode('ascii')
-            if dbg:
-                print("Logging in, username of: " + user, file=dbgout)
-        if self.authenticationtype.upper() == 'OAUTH2':
-            authstring = self._getOAuth2String(user, True)
+        if self.authenticationtype.upper() == 'LOGIN':    
+            user = xAuthenticator.getUserName()
+            password = xAuthenticator.getPassword()
+            if user != '':
+                if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
+                    user = user.encode('ascii')
+                    if password != '':
+                        password = password.encode('ascii')
+                if dbg:
+                    print("Logging in, username of: " + user, file=dbgout)
+                self.server.login(user, password)
+        elif self.authenticationtype.upper() == 'OAUTH2':
+            authstring = xAuthenticator.escapeString(server)
             self.server.docmd('AUTH', 'XOAUTH2 ' + authstring)
-        elif self.authenticationtype.upper() == 'LOGIN':
-            self.server.login(user, password)
+            if dbg:
+                print("OAuth2 authentication, authstring of: " + authstring, file=dbgout)
         for listener in self.listeners:
             listener.connected(self.notify)
     def disconnect(self):
@@ -277,15 +267,8 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
 
         mailerstring = "LibreOffice via Caolan's mailmerge component"
         try:
-            ctx = uno.getComponentContext()
-            aConfigProvider = ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-            prop = uno.createUnoStruct('com.sun.star.beans.PropertyValue')
-            prop.Name = "nodepath"
-            prop.Value = "/org.openoffice.Setup/Product"
-            aSettings = aConfigProvider.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess",
-                (prop,))
-            mailerstring = aSettings.getByName("ooName") + " " + \
-                aSettings.getByName("ooSetupVersion") + " via Caolan's mailmerge component"
+            configuration = self._getConfiguration("/org.openoffice.Setup/Product")
+            mailerstring = "%s %s via Caolan's mailmerge component" % (configuration.getByName("ooName"), configuration.getByName("ooSetupVersion"))
         except:
             pass
 
@@ -331,9 +314,8 @@ class PyMailSMTPService(unohelper.Base, XSmtpService):
         self.server.sendmail(sendermail, truerecipients, msg.as_string())
 
 class PyMailIMAPService(unohelper.Base, XMailService):
-    def __init__( self, ctx ):
+    def __init__( self, ctx):
         self.ctx = ctx
-        self.type = IMAP
         self.listeners = []
         self.connectiontype = None
         self.authenticationtype = None
@@ -344,23 +326,6 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         self.notify = EventObject(self)
         if dbg:
             print("PyMailIMAPService init", file=dbgout)
-    def _getPropertyValue(self, nodepath):
-        args = []
-        arg = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
-        arg.Name = "nodepath"
-        arg.Value = nodepath
-        args.append(arg)
-        return tuple(args)
-    def _getConfigSetting(self, nodepath, property):
-        config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
-        return access.getByName(property)
-    def _getOAuth2String(self, username, encode=True):
-        oauth2service = self.ctx.ServiceManager.createInstance("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service")
-        if encode:
-            return oauth2service.escapeString(username)
-        else:
-            return oauth2service.unescapeString(username)
     def addConnectionListener(self, xListener):
         if dbg:
             print("PyMailIMAPService addConnectionListener", file=dbgout)
@@ -380,7 +345,8 @@ class PyMailIMAPService(unohelper.Base, XMailService):
     def getSupportedConnectionTypes(self):
         if dbg:
             print("PyMailIMAPService getSupportedConnectionTypes", file=dbgout)
-        return self.supportedconnection
+        return self.supportedauthentication
+    #    return self.supportedconnection
     def getSupportedAuthenticationTypes(self):
         if dbg:
             print("PyMailIMAPService getSupportedAuthenticationTypes", file=dbgout)
@@ -388,6 +354,11 @@ class PyMailIMAPService(unohelper.Base, XMailService):
     def connect(self, xConnectionContext, xAuthenticator):
         if dbg:
             print("PyMailIMAPService connect", file=dbgout)
+
+        xConnectionContext = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.ConnectionContext", self.ctx)
+        xConnectionContext.setPropertyValue("MailServiceType", IMAP)
+        xAuthenticator = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.Authenticator", self.ctx)
+
         self.connectioncontext = xConnectionContext
         server = xConnectionContext.getValueByName("ServerName")
         if dbg:
@@ -395,42 +366,34 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         port = int(xConnectionContext.getValueByName("Port"))
         if dbg:
             print("Port: " + str(port), file=dbgout)
-        security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
-        hightsecurity = len(self.supportedconnection) - 1
-        if security > hightsecurity:
-            self.connectiontype = self.supportedconnection[hightsecurity]
-        else:
-            self.connectiontype = self.supportedconnection[security]
+        self.connectiontype = xConnectionContext.getValueByName("ConnectionType")
         if dbg:
             print("ConnectionType: " + self.connectiontype, file=dbgout)
-        authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
-        hightauthentication = len(self.supportedauthentication) - 1
-        if authentication > hightauthentication:
-            self.authenticationtype = self.supportedauthentication[hightauthentication]
-        else:
-            self.authenticationtype = self.supportedauthentication[authentication]
+        self.authenticationtype = xConnectionContext.getValueByName("AuthenticationType")
         if dbg:
-            print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
+            print("AuthenticationType: " + self.authenticationtype, file=dbgout)
         if self.connectiontype.upper() == 'SSL':
             self.server = imaplib.IMAP4_SSL(host=server, port=port)
         else:
             self.server = imaplib.IMAP4(host=server, port=port)
         if self.connectiontype.upper() == 'TLS':
             self.server.starttls()
-        user = xAuthenticator.getUserName()
-        password = xAuthenticator.getPassword()
-        if user != '':
-            if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
-                user = user.encode('ascii')
-                if password != '':
-                    password = password.encode('ascii')
-            if dbg:
-                print("Logging in, username of: " + user, file=dbgout)
-        if self.authenticationtype.upper() == 'OAUTH2':
-            authstring = self._getOAuth2String(user, False)
+        if self.authenticationtype.upper() == 'LOGIN':
+            user = xAuthenticator.getUserName()
+            password = xAuthenticator.getPassword()
+            if user != '':
+                if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
+                    user = user.encode('ascii')
+                    if password != '':
+                        password = password.encode('ascii')
+                if dbg:
+                    print("Logging in, username of: " + user, file=dbgout)
+                self.server.login(user, password)
+        elif self.authenticationtype.upper() == 'OAUTH2':
+            authstring = xAuthenticator.unescapeString(server)
             self.server.authenticate('XOAUTH2', lambda x: authstring)
-        elif self.authenticationtype.upper() == 'LOGIN':
-            self.server.login(user, password)
+            if dbg:
+                print("OAuth2 authentication, authstring of: " + authstring, file=dbgout)
         for listener in self.listeners:
             listener.connected(self.notify)
     def disconnect(self):
@@ -451,9 +414,8 @@ class PyMailIMAPService(unohelper.Base, XMailService):
         return self.connectioncontext
 
 class PyMailPOP3Service(unohelper.Base, XMailService):
-    def __init__( self, ctx ):
+    def __init__( self, ctx):
         self.ctx = ctx
-        self.type = POP3
         self.listeners = []
         self.connectiontype = None
         self.authenticationtype = None
@@ -464,23 +426,6 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
         self.notify = EventObject(self)
         if dbg:
             print("PyMailPOP3Service init", file=dbgout)
-    def _getPropertyValue(self, nodepath):
-        args = []
-        arg = uno.createUnoStruct("com.sun.star.beans.PropertyValue")
-        arg.Name = "nodepath"
-        arg.Value = nodepath
-        args.append(arg)
-        return tuple(args)
-    def _getConfigSetting(self, nodepath, property):
-        config = self.ctx.ServiceManager.createInstance("com.sun.star.configuration.ConfigurationProvider")
-        access = config.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess", self._getPropertyValue(nodepath))
-        return access.getByName(property)
-    def _getOAuth2String(self, username, encode=True):
-        oauth2service = self.ctx.ServiceManager.createInstance("com.gmail.prrvchr.extensions.gMailOOo.OAuth2Service")
-        if encode:
-            return oauth2service.escapeString(username)
-        else:
-            return oauth2service.unescapeString(username)
     def addConnectionListener(self, xListener):
         if dbg:
             print("PyMailPOP3Service addConnectionListener", file=dbgout)
@@ -500,7 +445,8 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
     def getSupportedConnectionTypes(self):
         if dbg:
             print("PyMailPOP3Service getSupportedConnectionTypes", file=dbgout)
-        return self.supportedconnection
+        return self.supportedauthentication
+    #    return self.supportedconnection
     def getSupportedAuthenticationTypes(self):
         if dbg:
             print("PyMailPOP3Service getSupportedAuthenticationTypes", file=dbgout)
@@ -508,49 +454,45 @@ class PyMailPOP3Service(unohelper.Base, XMailService):
     def connect(self, xConnectionContext, xAuthenticator):
         if dbg:
             print("PyMailPOP3Service connect", file=dbgout)
+
+        xConnectionContext = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.ConnectionContext", self.ctx)
+        xConnectionContext.setPropertyValue("MailServiceType", POP3)
+        xAuthenticator = self.ctx.ServiceManager.createInstanceWithContext("com.gmail.prrvchr.extensions.gMailOOo.Authenticator", self.ctx)
+
         self.connectioncontext = xConnectionContext
         server = xConnectionContext.getValueByName("ServerName")
         if dbg:
-            print(server, file=dbgout)
+            print("ServerName: " + server, file=dbgout)
         port = int(xConnectionContext.getValueByName("Port"))
         if dbg:
-            print(port, file=dbgout)
-        timeout = int(self._getConfigSetting(g_SettingNodePath, "ConnectionTimeout"))
+            print("Port: " + str(port), file=dbgout)
+        timeout = int(xConnectionContext.getValueByName("ConnectionTimeout"))
         if dbg:
             print("Timeout: " + str(timeout), file=dbgout)
-        security = self._getConfigSetting(g_SettingNodePath, "ConnectionSecurity")
-        hightsecurity = len(self.supportedconnection) - 1
-        if security > hightsecurity:
-            self.connectiontype = self.supportedconnection[hightsecurity]
-        else:
-            self.connectiontype = self.supportedconnection[security]
+        self.connectiontype = xConnectionContext.getValueByName("ConnectionType")
         if dbg:
             print("ConnectionType: " + self.connectiontype, file=dbgout)
-        authentication = self._getConfigSetting(g_SettingNodePath, "AuthenticationMethod")
-        hightauthentication = len(self.supportedauthentication) - 1
-        if authentication > hightauthentication:
-            self.authenticationtype = self.supportedauthentication[hightauthentication]
-        else:
-            self.authenticationtype = self.supportedauthentication[authentication]
+        self.authenticationtype = xConnectionContext.getValueByName("AuthenticationType")
         if dbg:
-            print("AuthenticationMethod: " + self.authenticationtype, file=dbgout)
+            print("AuthenticationType: " + self.authenticationtype, file=dbgout)
         if self.connectiontype.upper() == 'SSL':
             self.server = poplib.POP3_SSL(host=server, port=port, timeout=timeout)
         else:
             self.server = poplib.POP3(host=server, port=port, timeout=timeout)
         if self.connectiontype.upper() == 'TLS':
             self.server.stls()
-        user = xAuthenticator.getUserName()
-        password = xAuthenticator.getPassword()
-        if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
-            user = user.encode('ascii')
-            if password != '':
-                password = password.encode('ascii')
-        if dbg:
-            print("Logging in, username of: " + user, file=dbgout)
         if self.authenticationtype.upper() == 'LOGIN':
-            self.server.user(user)
-            self.server.pass_(password)
+            user = xAuthenticator.getUserName()
+            password = xAuthenticator.getPassword()
+            if user != '':
+                if sys.version < '3': # fdo#59249 i#105669 Python 2 needs "ascii"
+                    user = user.encode('ascii')
+                    if password != '':
+                        password = password.encode('ascii')
+                if dbg:
+                    print("Logging in, username of: " + user, file=dbgout)
+                self.server.user(user)
+                self.server.pass_(password)
         for listener in self.listeners:
             listener.connected(self.notify)
     def disconnect(self):
@@ -658,8 +600,8 @@ class PyMailMessage(unohelper.Base, XMailMessage):
 g_ImplementationHelper.addImplementation( \
         PyMailServiceProvider,
         g_providerImplName,
-        ("com.sun.star.mail.MailServiceProvider",),)
+        ("com.sun.star.mail.MailServiceProvider", ), )
 g_ImplementationHelper.addImplementation( \
         PyMailMessage,
         g_messageImplName,
-        ("com.sun.star.mail.MailMessage",),)
+        ("com.sun.star.mail.MailMessage", ), )
